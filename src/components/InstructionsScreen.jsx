@@ -54,6 +54,10 @@ export default function InstructionsScreen({ onBack, engine }) {
           <span>Tecla <kbd>G</kbd>. Inicias con 4 cargas (máx. 4). Al activarlo, un relámpago cae del cielo y golpea todos los enemigos. Destruye los débiles y aturde a los grandes.</span>
         </article>
         <article>
+          <strong>🏹 Lluvia de flechas</strong>
+          <span>Tecla <kbd>R</kbd>. Inicias con 5 cargas. Una lluvia de flechas golpea una zona cercana. Cada flecha daña a cualquier enemigo.</span>
+        </article>
+        <article>
           <strong>🎯 Munición</strong>
           <span>Recarga 3 balas (máx. 30). Si estás lleno, suma 60 puntos.</span>
         </article>

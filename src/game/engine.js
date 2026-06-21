@@ -99,7 +99,7 @@ export function initGame(canvas, options = {}) {
   const player = {
     x: 150,
     y: 240,
-    r: 16,
+    r: 14,
     vx: 0,
     vy: 0,
     energy: 5,
@@ -117,6 +117,7 @@ export function initGame(canvas, options = {}) {
     tilt: 0,
     lastDashVector: { x: 1, y: 0 },
     lightningCharges: 4,
+    arrowRain: 5,
   };
 
   function rand(min, max) {
@@ -220,6 +221,7 @@ export function initGame(canvas, options = {}) {
       tilt: 0,
       lastDashVector: { x: 1, y: 0 },
       lightningCharges: 4,
+      arrowRain: 5,
     });
     showPhaseToast(currentPhase().toast);
     updateHud();
@@ -475,6 +477,15 @@ export function initGame(canvas, options = {}) {
         lightningIndicator.classList.add("hidden");
       }
     }
+    const arrowIndicator = document.getElementById("arrowIndicator");
+    if (arrowIndicator) {
+      if (player.arrowRain > 0) {
+        arrowIndicator.innerHTML = `<span>🏹 FLECHAS</span><strong>${player.arrowRain}</strong>`;
+        arrowIndicator.classList.remove("hidden");
+      } else {
+        arrowIndicator.classList.add("hidden");
+      }
+    }
   }
 
   function showPhaseToast(message) {
@@ -671,12 +682,13 @@ export function initGame(canvas, options = {}) {
     let type = "crystal";
     if (r < 0.15) type = "heart";        // 15% corazones
     else if (r < 0.20) type = "ammo";    // 5% munición
-    else if (r < 0.40) type = "rainbow"; // 20% arcoíris
-    else if (r < 0.50) type = "greenRocket"; // 10% cohete verde
-    else if (r < 0.58) type = "whirlpool";   // 8% REMOLINO
-    else if (r < 0.66) type = "ice";         // 8% HIELO
-    else if (r < 0.76) type = "lightning";   // 10% RAYO
-    // resto 24% cristal
+    else if (r < 0.38) type = "rainbow"; // 18% arcoíris
+    else if (r < 0.48) type = "greenRocket"; // 10% cohete verde
+    else if (r < 0.56) type = "whirlpool";   // 8% REMOLINO
+    else if (r < 0.64) type = "ice";         // 8% HIELO
+    else if (r < 0.74) type = "lightning";   // 10% RAYO
+    else if (r < 0.84) type = "arrow";       // 10% flechas
+    // resto 16% cristal
     
     const pickup = {
       x: width + rand(50, 140),
@@ -864,7 +876,7 @@ export function initGame(canvas, options = {}) {
       vx: dirX * 520,
       vy: dirY * 520,
       r: 5,
-      life: 1.2,
+      life: 2.2,
       color: "#ffd166"
     });
 
@@ -923,6 +935,37 @@ export function initGame(canvas, options = {}) {
       showComboToast(`⚡ Tormenta eléctrica x${hitCount}`);
     }
 
+    updateHud();
+  }
+
+  function triggerArrowRain() {
+    if (state.mode !== "playing" || state.paused) return;
+    if (player.arrowRain <= 0) { sfx("empty"); return; }
+    if (state.arrowRainFX) return;
+    player.arrowRain -= 1;
+    const cx = player.x;
+    const cy = player.y - 60;
+    const radius = 160;
+    const count = 30 + Math.floor(Math.random() * 12);
+    state.arrowRainFX = { timer: 0.5, arrows: [] };
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist2 = Math.random() * radius;
+      const targetX = cx + Math.cos(angle) * dist2;
+      const targetY = cy + Math.sin(angle) * dist2;
+      const startY = targetY - 500 - Math.random() * 300;
+      state.arrowRainFX.arrows.push({
+        x: targetX + (Math.random() - 0.5) * 20,
+        y: startY,
+        targetX,
+        targetY,
+        speed: 3000 + Math.random() * 1200,
+        delay: Math.random() * 0.25,
+        elapsed: 0,
+        done: false,
+      });
+    }
+    sfx("lightning");
     updateHud();
   }
 
@@ -1075,8 +1118,47 @@ export function initGame(canvas, options = {}) {
           life: 0.8,
           color: "#8cffb2"
         });
-        state.ally.shootCooldown = 0.6;
+        state.ally.shootCooldown = 0.3;
         sfx("shoot");
+      }
+    }
+  }
+
+  function updateArrowRainFX(dt) {
+    if (!state.arrowRainFX) return;
+    state.arrowRainFX.timer -= dt;
+    if (state.arrowRainFX.timer <= 0) {
+      state.arrowRainFX = null;
+      return;
+    }
+    for (const a of state.arrowRainFX.arrows) {
+      if (a.done) continue;
+      a.elapsed += dt;
+      if (a.elapsed < a.delay) continue;
+      a.y = a.y + a.speed * dt;
+      if (a.y >= a.targetY && !a.done) {
+        a.y = a.targetY;
+        a.done = true;
+        addParticles(a.x, a.y, "#c8a45c", 8, 120, 3);
+        let closest = null;
+        let closestDist = Infinity;
+        for (const o of state.obstacles) {
+          if (o.dead) continue;
+          const d = dist(a, o) - collisionRadius(o);
+          if (d < 0 && (closest === null || dist(a, o) < closestDist)) {
+            closest = o;
+            closestDist = dist(a, o);
+          }
+        }
+        if (closest) {
+          closest.dead = true;
+          closest.shakeTimer = 0.2;
+          const pts = closest.type === "cannibal" ? 100 : (closest.type === "metamorphicCube" ? 400 : (closest.type === "balanceStone" ? 500 : 120));
+          state.score += pts;
+          addFloating(`🏹 +${pts}`, a.x, a.y - 20, "#c8a45c");
+          addParticles(closest.x, closest.y, obstacleColor(closest), 20, 200, 5);
+          sfx("explosion");
+        }
       }
     }
   }
@@ -1118,8 +1200,9 @@ export function initGame(canvas, options = {}) {
     updateProjectiles(dt);
     updateEffects(dt);
     updateAlly(dt);
-    updateWhirlpool(dt); // Nuevo efecto
+    updateWhirlpool(dt);
     updateLightningFX(dt);
+    updateArrowRainFX(dt);
     updateHud();
   }
 
@@ -1306,11 +1389,11 @@ export function initGame(canvas, options = {}) {
             state.ally = {
               x: player.x - 20,
               y: player.y,
-              timer: 6.0,
+              timer: 10.0,
               shootCooldown: 0,
             };
           } else {
-            state.ally.timer = Math.max(state.ally.timer, 6.0);
+            state.ally.timer = Math.max(state.ally.timer, 10.0);
           }
           addFloating("🚀 ¡Aliado verde! 🚀", p.x, p.y - 28, "#8cffb2");
           addParticles(p.x, p.y, "#8cffb2", 20, 200, 5);
@@ -1342,6 +1425,17 @@ export function initGame(canvas, options = {}) {
             addFloating("+100", p.x, p.y - 28, "#ffd166");
           }
           addParticles(p.x, p.y, "#b8f4ff", 20, 200, 5);
+          sfx("collect");
+          vibrate(12);
+        } else if (p.type === "arrow") {
+          if (player.arrowRain < 99) {
+            player.arrowRain += 1;
+            addFloating("🏹 ¡Lluvia de flechas! 🏹", p.x, p.y - 28, "#ffd166");
+          } else {
+            state.score += 80;
+            addFloating("+80", p.x, p.y - 28, "#ffd166");
+          }
+          addParticles(p.x, p.y, "#c8a45c", 20, 200, 5);
           sfx("collect");
           vibrate(12);
         } else {
@@ -1425,6 +1519,7 @@ export function initGame(canvas, options = {}) {
     for (const o of state.obstacles) drawObstacleShadow(o);
     for (const o of state.obstacles) drawObstacle(o);
     drawLightningBolts();
+    drawArrowRain();
     drawRipples();
     drawParticles();
     if (state.ally) drawAlly();
@@ -2013,6 +2108,23 @@ export function initGame(canvas, options = {}) {
       ctx.beginPath();
       ctx.arc(r*0.3, r*0.2, r*0.15, 0, TAU);
       ctx.fill();
+    } else if (p.type === "arrow") {
+      ctx.shadowColor = "#c8a45c";
+      ctx.fillStyle = "#c8a45c";
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(-r * 0.1, -r * 0.5);
+      ctx.lineTo(-r * 0.1, -r * 0.15);
+      ctx.lineTo(-r, -r * 0.15);
+      ctx.lineTo(-r, r * 0.15);
+      ctx.lineTo(-r * 0.1, r * 0.15);
+      ctx.lineTo(-r * 0.1, r * 0.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#f8e8b0";
+      ctx.beginPath();
+      ctx.rect(-r * 0.3, -r * 0.08, r * 0.5, r * 0.16);
+      ctx.fill();
     } else {
       ctx.shadowColor = "#4ee7d5";
       const grad = ctx.createLinearGradient(-r, -r, r, r);
@@ -2125,6 +2237,35 @@ export function initGame(canvas, options = {}) {
         ctx.arc(fx.x, fx.y, 14 * flashAlpha, 0, TAU);
         ctx.fill();
       }
+    }
+    ctx.restore();
+  }
+
+  function drawArrowRain() {
+    if (!state.arrowRainFX) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    for (const a of state.arrowRainFX.arrows) {
+      if (a.done) continue;
+      if (a.elapsed < a.delay) continue;
+      const p = Math.min(1, (a.elapsed - a.delay) / 0.5);
+      const alpha = p < 0.2 ? p / 0.2 : 0.7;
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = "#c8a45c";
+      ctx.lineWidth = 2.5;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = "#c8a45c";
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(a.x, a.y + 24);
+      ctx.stroke();
+      ctx.fillStyle = "#f8e8b0";
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(a.x - 5, a.y + 8);
+      ctx.lineTo(a.x + 5, a.y + 8);
+      ctx.closePath();
+      ctx.fill();
     }
     ctx.restore();
   }
@@ -2254,6 +2395,19 @@ export function initGame(canvas, options = {}) {
     ctx.beginPath();
     ctx.ellipse(-2, 8, 14, 3, 0, 0, TAU);
     ctx.fill();
+    if (player.invuln > 0 && !player.invisible) {
+      ctx.save();
+      ctx.globalCompositeOperation = "source-atop";
+      ctx.fillStyle = `rgba(255, 50, 50, ${0.35 + Math.sin(state.time * 48) * 0.15})`;
+      ctx.beginPath();
+      ctx.moveTo(24, 0);
+      ctx.bezierCurveTo(14, -16, -12, -15, -22, -6);
+      ctx.lineTo(-22, 6);
+      ctx.bezierCurveTo(-12, 15, 14, 16, 24, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
     ctx.restore();
     if (player.invisible && player.invisibleTimer > 0) {
       ctx.restore();
@@ -2323,6 +2477,9 @@ export function initGame(canvas, options = {}) {
     }
     if (event.code === "KeyG") {
       triggerLightning();
+    }
+    if (event.code === "KeyR") {
+      triggerArrowRain();
     }
   }
   window.addEventListener("keydown", handleKeyDown);

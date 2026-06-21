@@ -38,6 +38,9 @@ export default function HUD() {
       <div id="lightningIndicator" className="hud-panel hidden" style={{ background: 'rgba(184, 244, 255, 0.3)', borderColor: '#b8f4ff' }}>
         <span>⚡ RAYO</span><strong id="lightningCount">4</strong>
       </div>
+      <div id="arrowIndicator" className="hud-panel hidden" style={{ background: 'rgba(200, 164, 92, 0.3)', borderColor: '#c8a45c' }}>
+        <span>🏹 FLECHAS</span><strong id="arrowCount">5</strong>
+      </div>
     </div>
   );
 }
