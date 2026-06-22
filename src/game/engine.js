@@ -86,6 +86,7 @@ export function initGame(canvas, options = {}) {
     projectiles: [],
     pickups: [],
     particles: [],
+    smoke: [],
     ripples: [],
     floating: [],
     stars: [],
@@ -1237,6 +1238,7 @@ export function initGame(canvas, options = {}) {
     updateWhirlpool(dt);
     updateLightningFX(dt);
     updateArrowRainFX(dt);
+    updateSmoke(dt);
     updateHud();
   }
 
@@ -1286,6 +1288,33 @@ export function initGame(canvas, options = {}) {
     player.y = clamp(player.y, top, height - 44);
     player.flame += dt * (player.dashTimer > 0 ? 22 : 9);
     player.tilt += ((player.vy / 520) - player.tilt) * Math.min(1, dt * 8);
+    // Spawn smoke from exhaust
+    const exhaustX = player.x - Math.cos(player.tilt) * 24;
+    const exhaustY = player.y + Math.sin(player.tilt) * 24;
+    state.smoke.push({
+      x: exhaustX + rand(-4, 4),
+      y: exhaustY + rand(-4, 4),
+      vx: rand(-8, 8) - Math.cos(player.tilt) * 6,
+      vy: rand(-28, -12) + Math.sin(player.tilt) * 6,
+      r: rand(2.5, 5),
+      life: rand(0.6, 1.2),
+      maxLife: 0,
+      gray: Math.floor(rand(140, 200)),
+    });
+    state.smoke[state.smoke.length - 1].maxLife = state.smoke[state.smoke.length - 1].life;
+  }
+
+  function updateSmoke(dt) {
+    for (let i = state.smoke.length - 1; i >= 0; i--) {
+      const s = state.smoke[i];
+      s.x += s.vx * dt + rand(-3, 3) * dt;
+      s.y += s.vy * dt;
+      s.vy += 6 * dt; // slow down upward drift
+      s.vx += rand(-6, 6) * dt;
+      s.life -= dt;
+      s.r += dt * 2.5;
+      if (s.life <= 0) { state.smoke.splice(i, 1); continue; }
+    }
   }
 
   function updateSpawning(dt) {
@@ -1548,6 +1577,7 @@ export function initGame(canvas, options = {}) {
     drawRipples();
     drawParticles();
     if (state.ally) drawAlly();
+    drawSmoke();
     drawPlayer();
     drawFloating();
 
@@ -2321,6 +2351,19 @@ export function initGame(canvas, options = {}) {
       ctx.beginPath();
       ctx.arc(r.x, r.y, r.radius * p, 0, TAU);
       ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawSmoke() {
+    for (const s of state.smoke) {
+      const alpha = Math.max(0, s.life / s.maxLife) * 0.45;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = `rgb(${s.gray},${s.gray},${s.gray})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, TAU);
+      ctx.fill();
       ctx.restore();
     }
   }
