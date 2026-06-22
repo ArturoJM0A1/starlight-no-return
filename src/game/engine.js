@@ -2532,10 +2532,6 @@ export function initGame(canvas, options = {}) {
       if (now - zeroTapTime < 500) { togglePause(); zeroTapTime = 0; return; }
       zeroTapTime = now;
     }
-    if (event.code === "KeyM") {
-      toggleMute();
-      return;
-    }
     setKey(event.code, true);
     if (event.repeat) return;
     if (event.code === "Space" || event.code === "ShiftLeft" || event.code === "ShiftRight") {
