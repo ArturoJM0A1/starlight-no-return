@@ -884,8 +884,8 @@ export function initGame(canvas, options = {}) {
     state.projectiles.push({
       x: player.x + dirX * (player.r + 5),
       y: player.y + dirY * (player.r + 5),
-      vx: dirX * 520,
-      vy: dirY * 520,
+      vx: dirX * 900,
+      vy: dirY * 900,
       r: 5,
       life: 2.2,
       color: "#ffd166"
