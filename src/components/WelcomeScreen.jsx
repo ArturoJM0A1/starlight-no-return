@@ -96,11 +96,11 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         </button>
       </div>
       {user ? (
-        <p style={{ marginTop: 18, fontSize: '0.8rem', color: '#b8c4d9', textAlign: 'center' }}>
+        <p style={{ marginTop: 18, fontSize: '1.1rem', color: '#b8c4d9', textAlign: 'center' }}>
           Hola <span style={{ color: '#f6d365', fontWeight: 600 }}>{user.username}</span>
         </p>
       ) : (
-        <p style={{ marginTop: 18, fontSize: '0.8rem', color: '#b8c4d9', textAlign: 'center' }}>
+        <p style={{ marginTop: 18, fontSize: '1.1rem', color: '#b8c4d9', textAlign: 'center' }}>
           ¿No te has logeado? <span style={{ color: '#f6d365', fontWeight: 600 }}>Regístrate para competir 👇</span>
         </p>
       )}
