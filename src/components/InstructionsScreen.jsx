@@ -1,4 +1,5 @@
 import React from 'react';
+import ContactFooter from './ContactFooter';
 
 const s = (d) => ({ __html: `<svg viewBox="0 0 20 20" width="20" height="20" style="flex-shrink:0">${d}</svg>` });
 
@@ -113,13 +114,7 @@ export default function InstructionsScreen({ onBack, engine }) {
           Iniciar viaje
         </button>
       </div>
-      <footer className="contact-footer">
-        <a href="https://github.com/ArturoJM0A1" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://arturojuarezmonroy.vercel.app/" target="_blank" rel="noopener noreferrer">Web</a>
-        <a href="https://x.com/juarez_mon84035" target="_blank" rel="noopener noreferrer">Twitter</a>
-        <a href="https://api.whatsapp.com/send/?phone=5217736802105&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        <span style={{ display: 'block', marginTop: 8, fontSize: '0.75rem', opacity: 0.6 }}>Arturo Juárez Monroy</span>
-      </footer>
+      <ContactFooter />
     </section>
   );
 }

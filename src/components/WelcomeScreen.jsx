@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AuthModal from './AuthModal';
 import TopGlobalModal from './TopGlobalModal';
+import ContactFooter from './ContactFooter';
 
 const goldBtn = {
   marginTop: 20, padding: '12px 28px', fontSize: '0.95rem', fontWeight: 700,
@@ -110,7 +111,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.boxShadow = '0 0 30px rgba(253, 160, 133, 0.6), 0 6px 20px rgba(0,0,0,0.4)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(253, 160, 133, 0.4), 0 4px 15px rgba(0,0,0,0.3)'; }}
         >
-          ✦ Iniciar sesión / Registrarse ✦
+          Iniciar sesión / Registrarse
         </button>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
@@ -123,12 +124,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           Top
         </button>
       </div>
-      <footer className="contact-footer">
-        <a href="https://github.com/ArturoJM0A1" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://arturojuarezmonroy.vercel.app/" target="_blank" rel="noopener noreferrer">Web</a>
-        <a href="https://x.com/juarez_mon84035" target="_blank" rel="noopener noreferrer">Twitter</a>
-        <a href="https://api.whatsapp.com/send/?phone=5217736802105&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-      </footer>
+      <ContactFooter />
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={onAuth} />}
       {showTop && <TopGlobalModal onClose={() => setShowTop(false)} />}
     </section>

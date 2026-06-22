@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getUserProfile, getTopPlayers } from '../firebase';
+import ContactFooter from './ContactFooter';
 
 const row = { display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '0.85rem' };
 const label = { color: '#b8c4d9' };
@@ -75,12 +76,7 @@ export default function GameOverScreen({ stats, engine, onHome, user }) {
           Instrucciones
         </button>
       </div>
-      <footer className="contact-footer">
-        <a href="https://github.com/ArturoJM0A1" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://arturojuarezmonroy.vercel.app/" target="_blank" rel="noopener noreferrer">Web</a>
-        <a href="https://x.com/juarez_mon84035" target="_blank" rel="noopener noreferrer">Twitter</a>
-        <a href="https://api.whatsapp.com/send/?phone=5217736802105&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-      </footer>
+      <ContactFooter />
     </section>
   );
 }
