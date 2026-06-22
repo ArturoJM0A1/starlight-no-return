@@ -2411,7 +2411,7 @@ export function initGame(canvas, options = {}) {
     ctx.closePath();
     ctx.fill();
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = "rgba(255,255,255,0.78)";
+    ctx.strokeStyle = damaged ? "rgba(255,80,80,0.9)" : "rgba(255,255,255,0.78)";
     ctx.stroke();
 
     ctx.fillStyle = "#ff6f91";
