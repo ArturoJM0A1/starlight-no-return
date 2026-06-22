@@ -810,7 +810,6 @@ export function initGame(canvas, options = {}) {
 
     player.energy -= 1;
     player.pulseCooldown = 0.42;
-    player.invuln = Math.max(player.invuln, 0.18);
     state.shake = Math.max(state.shake, 8);
     state.flash = Math.max(state.flash, 0.18);
     addRipple(player.x, player.y, "#4ee7d5", 260, 5);
