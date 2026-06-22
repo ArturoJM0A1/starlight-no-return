@@ -300,6 +300,11 @@ export function initGame(canvas, options = {}) {
 
   function toggleMute() {
     muted = !muted;
+    const muteButtonIntro = $("muteButtonIntro");
+    if (muteButtonIntro) {
+      muteButtonIntro.setAttribute("aria-pressed", String(muted));
+      muteButtonIntro.textContent = muted ? "Silenciado" : "Sonido";
+    }
   }
 
   function ensureAudio() {
