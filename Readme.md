@@ -122,7 +122,7 @@ Moneda dorada que aparece al inicio y cada 2 minutos. Debes recogerla físicamen
 | Objeto                | Efecto                                    |
 | --------------------- | ----------------------------------------- |
 | ❤️ Corazón            | Suma una vida (sin límite máximo).        |
-| 🎯 Munición           | Recarga 3 balas (sin límite máximo).      |
+| 🎯 Munición           | Recarga 8 balas (sin límite máximo).      |
 | 🌈 Cubo Arcoíris      | Invisibilidad e invulnerabilidad 4s.      |
 | 🚀 Cohete Verde       | Invoca aliado por 10s.                    |
 | 🌀 Remolino           | Absorbe obstáculos cercanos.              |
