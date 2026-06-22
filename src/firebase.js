@@ -87,7 +87,7 @@ export async function saveBestScore(uid, score) {
   }
 }
 
-export async function getTopPlayers(count = 50) {
+export async function getTopPlayers(count = 200) {
   if (!db) required();
   const q = query(collection(db, 'profiles'), orderBy('bestScore', 'desc'), limit(count));
   const snap = await getDocs(q);
