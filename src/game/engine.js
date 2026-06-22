@@ -2506,8 +2506,6 @@ export function initGame(canvas, options = {}) {
     } else {
       state.time += dt * 0.45;
       player.flame += dt * 5;
-      player.x += ((width * 0.22) - player.x) * Math.min(1, dt * 1.6);
-      player.y += ((height * 0.56 + Math.sin(state.time * 1.7) * 18) - player.y) * Math.min(1, dt * 1.6);
       player.tilt = Math.sin(state.time * 1.3) * 0.08;
     }
 
