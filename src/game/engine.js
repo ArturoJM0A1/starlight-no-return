@@ -12,7 +12,7 @@ export function initGame(canvas, options = {}) {
       duration: 3.5,
       spawn: 0.2,
       speed: 1.35,
-      crystals: 0.78,
+      crystals: 0.97,
       color: "#4ee7d5",
       toast: "Calma: carga el pulso y estudia las sombras",
     },
@@ -21,7 +21,7 @@ export function initGame(canvas, options = {}) {
       duration: 9,
       spawn: 0.13,
       speed: 1.65,
-      crystals: 0.45,
+      crystals: 0.88,
       color: "#ffd166",
       toast: "Ascenso: las formas empiezan a cambiar",
     },
@@ -30,7 +30,7 @@ export function initGame(canvas, options = {}) {
       duration: 17,
       spawn: 0.07,
       speed: 2.0,
-      crystals: 0.22,
+      crystals: 0.70,
       color: "#ee597c",
       toast: "Tormenta magnetica: usa el pulso con criterio",
     },
@@ -39,7 +39,7 @@ export function initGame(canvas, options = {}) {
       duration: 4.5,
       spawn: 0.22,
       speed: 1.26,
-      crystals: 0.95,
+      crystals: 1.00,
       color: "#8cffb2",
       toast: "Respiro: reposicionate y recoge cristales",
     },
@@ -700,15 +700,15 @@ export function initGame(canvas, options = {}) {
     
     const r = Math.random();
     let type = "crystal";
-    if (r < 0.15) type = "heart";        // 15% corazones
-    else if (r < 0.20) type = "ammo";    // 5% munición
-    else if (r < 0.38) type = "rainbow"; // 18% arcoíris
-    else if (r < 0.48) type = "greenRocket"; // 10% cohete verde
-    else if (r < 0.56) type = "whirlpool";   // 8% REMOLINO
-    else if (r < 0.64) type = "ice";         // 8% HIELO
-    else if (r < 0.74) type = "lightning";   // 10% RAYO
-    else if (r < 0.84) type = "arrow";       // 10% flechas
-    // resto 16% cristal
+    if (r < 0.20) type = "heart";        // 20% corazones
+    else if (r < 0.23) type = "ammo";    // 3% munición
+    else if (r < 0.39) type = "rainbow"; // 16% arcoíris
+    else if (r < 0.50) type = "greenRocket"; // 11% cohete verde
+    else if (r < 0.59) type = "whirlpool";   // 9% REMOLINO
+    else if (r < 0.68) type = "ice";         // 9% HIELO
+    else if (r < 0.80) type = "lightning";   // 12% RAYO
+    else if (r < 0.92) type = "arrow";       // 12% flechas
+    // resto 8% cristal
     
     const pickup = {
       x: width + rand(50, 140),

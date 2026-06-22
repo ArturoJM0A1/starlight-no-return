@@ -13,10 +13,12 @@ const goldBtn = {
 };
 
 const ghostBtn = {
-  marginLeft: 8, padding: '2px 12px', fontSize: '0.75rem', fontWeight: 600,
-  background: 'rgba(0, 80, 70, 0.4)', border: '1px solid rgba(0, 120, 100, 0.5)',
-  borderRadius: 8, color: '#4ee7d5', cursor: 'pointer',
-  transition: 'transform 0.2s, background 0.2s',
+  marginLeft: 8, padding: '10px 22px', fontSize: '0.9rem', fontWeight: 700,
+  background: 'linear-gradient(135deg, #0d7377, #14bdad)',
+  border: 0, borderRadius: 8,
+  color: '#f8fbff', cursor: 'pointer', letterSpacing: '0.5px',
+  boxShadow: '0 0 18px rgba(20, 189, 173, 0.5), 0 4px 12px rgba(0,0,0,0.3)',
+  transition: 'transform 0.2s, box-shadow 0.2s',
 };
 
 export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
@@ -113,8 +115,8 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         <button
           style={ghostBtn}
           onClick={() => setShowTop(true)}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0, 80, 70, 0.7)'; e.currentTarget.style.transform = 'scale(1.04)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0, 80, 70, 0.4)'; e.currentTarget.style.transform = 'scale(1)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 30px rgba(20, 189, 173, 0.7), 0 6px 18px rgba(0,0,0,0.4)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 18px rgba(20, 189, 173, 0.5), 0 4px 12px rgba(0,0,0,0.3)'; }}
         >
           Top
         </button>
