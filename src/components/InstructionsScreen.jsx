@@ -58,19 +58,19 @@ export default function InstructionsScreen({ onBack, engine }) {
         </article>
         <article>
           <strong><Icon type="rainbow" /> Cubo arcoíris</strong>
-          <span>Otorga invisibilidad durante 4 segundos. Eres invulnerable y semitransparente.</span>
+          <span>Otorga invisibilidad durante 4 segundos. Se acumula si recoges más.</span>
         </article>
         <article>
           <strong><Icon type="greenRocket" /> Cohete verde (aliado)</strong>
-          <span>Invoca un mini-cohete que te sigue y dispara a enemigos durante 10 segundos.</span>
+          <span>Invoca un mini-cohete que te sigue y dispara a enemigos durante 10 segundos. Se acumula si recoges más.</span>
         </article>
         <article>
           <strong><Icon type="whirlpool" /> Remolino</strong>
-          <span>Crea un campo de absorción durante 3 segundos. Elimina hasta 6 obstáculos cercanos uno por uno.</span>
+          <span>Crea un campo de absorción. Elimina obstáculos cercanos. Se acumula si recoges más.</span>
         </article>
         <article>
           <strong><Icon type="ice" /> Hielo</strong>
-          <span>Congela todos los obstáculos en pantalla durante 3 segundos. No se mueven ni cambian de posición.</span>
+          <span>Congela todos los obstáculos en pantalla durante 3 segundos. Se acumula si recoges más.</span>
         </article>
         <article>
           <strong><Icon type="lightning" /> Rayo</strong>

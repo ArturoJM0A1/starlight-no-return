@@ -123,10 +123,10 @@ Moneda dorada que aparece al inicio y cada 2 minutos. Debes recogerla físicamen
 | --------------------- | ----------------------------------------- |
 | ❤️ Corazón            | Suma una vida (sin límite máximo).        |
 | 🎯 Munición           | Recarga 8 balas (sin límite máximo).      |
-| 🌈 Cubo Arcoíris      | Invisibilidad e invulnerabilidad 4s.      |
-| 🚀 Cohete Verde       | Invoca aliado por 10s.                    |
-| 🌀 Remolino           | Absorbe obstáculos cercanos.              |
-| ❄️ Hielo              | Congela todos los obstáculos.             |
+| 🌈 Cubo Arcoíris      | Invisibilidad e invulnerabilidad 4s (acumulable). |
+| 🚀 Cohete Verde       | Invoca aliado por 10s (acumulable).               |
+| 🌀 Remolino           | Absorbe obstáculos cercanos (acumulable).         |
+| ❄️ Hielo              | Congela todos los obstáculos 3s (acumulable).     |
 | ⚡ Rayo                | Suma una carga de rayo.                   |
 | 🏹 Flechas            | Suma una carga de lluvia de flechas.      |
 | 💎 Cristal            | Suma una carga de pulso.                  |

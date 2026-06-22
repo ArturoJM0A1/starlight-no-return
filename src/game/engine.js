@@ -874,8 +874,8 @@ export function initGame(canvas, options = {}) {
     state.projectiles.push({
       x: player.x + dirX * (player.r + 5),
       y: player.y + dirY * (player.r + 5),
-      vx: dirX * 1300,
-      vy: dirY * 1300,
+      vx: dirX * 1600,
+      vy: dirY * 1600,
       r: 5,
       life: 2.2,
       color: "#ffd166"
@@ -960,7 +960,7 @@ export function initGame(canvas, options = {}) {
         y: startY,
         targetX,
         targetY,
-        speed: 3000 + Math.random() * 1200,
+        speed: 6000 + Math.random() * 2000,
         delay: Math.random() * 0.25,
         elapsed: 0,
         done: false,
@@ -1428,8 +1428,8 @@ export function initGame(canvas, options = {}) {
           addFloating("+ Munición", p.x, p.y - 28, "#ffd166");
         } else if (p.type === "rainbow") {
           player.invisible = true;
-          player.invisibleTimer = 4.0;
-          player.invuln = Math.max(player.invuln, 4.0);
+          player.invisibleTimer += 4.0;
+          player.invuln += 4.0;
           addFloating("✨ ¡Invisible! ✨", p.x, p.y - 28, "#ffd166");
           addParticles(p.x, p.y, "#ff00ff", 20, 200, 5);
           sfx("collect");
@@ -1442,23 +1442,21 @@ export function initGame(canvas, options = {}) {
               shootCooldown: 0,
             };
           } else {
-            state.ally.timer = Math.max(state.ally.timer, 10.0);
+            state.ally.timer += 10.0;
           }
           addFloating("🚀 ¡Aliado verde! 🚀", p.x, p.y - 28, "#8cffb2");
           addParticles(p.x, p.y, "#8cffb2", 20, 200, 5);
           sfx("collect");
         } else if (p.type === "whirlpool") {
-          // Activar remolino: 3 segundos, puede absorber hasta 6 obstáculos
-          state.whirlpoolTimer = 4.0;
-          state.whirlpoolRemaining = 12;
+          state.whirlpoolTimer += 4.0;
+          state.whirlpoolRemaining += 12;
           state.whirlpoolAbsorbCooldown = 0;
           addFloating("🌀 ¡Remolino activado! 🌀", p.x, p.y - 28, "#4ee7d5");
           addParticles(p.x, p.y, "#4ee7d5", 24, 220, 6);
           sfx("whirlpool");
           vibrate([20, 40]);
         } else if (p.type === "ice") {
-          // Congelar todos los obstáculos por 3 segundos
-          state.frozenTimer = 3.0;
+          state.frozenTimer += 3.0;
           addFloating("❄️ ¡Congelación masiva! ❄️", p.x, p.y - 28, "#8cffb2");
           addParticles(p.x, p.y, "#88ccff", 24, 200, 5);
           sfx("ice");
