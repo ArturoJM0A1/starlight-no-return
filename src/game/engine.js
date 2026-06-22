@@ -1299,7 +1299,7 @@ export function initGame(canvas, options = {}) {
       r: rand(2.5, 5),
       life: rand(0.6, 1.2),
       maxLife: 0,
-      gray: Math.floor(rand(140, 200)),
+      gray: Math.floor(rand(190, 230)),
     });
     state.smoke[state.smoke.length - 1].maxLife = state.smoke[state.smoke.length - 1].life;
   }
@@ -2357,8 +2357,9 @@ export function initGame(canvas, options = {}) {
 
   function drawSmoke() {
     for (const s of state.smoke) {
-      const alpha = Math.max(0, s.life / s.maxLife) * 0.45;
+      const alpha = Math.max(0, s.life / s.maxLife) * 0.25;
       ctx.save();
+      ctx.filter = "blur(2px)";
       ctx.globalAlpha = alpha;
       ctx.fillStyle = `rgb(${s.gray},${s.gray},${s.gray})`;
       ctx.beginPath();
