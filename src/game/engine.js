@@ -1424,7 +1424,7 @@ export function initGame(canvas, options = {}) {
           state.health++;
           addFloating("+ Vida", p.x, p.y - 28, "#ff6f91");
         } else if (p.type === "ammo") {
-          player.ammo += 3;
+          player.ammo += 8;
           addFloating("+ Munición", p.x, p.y - 28, "#ffd166");
         } else if (p.type === "rainbow") {
           player.invisible = true;

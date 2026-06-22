@@ -54,7 +54,7 @@ export default function InstructionsScreen({ onBack, engine }) {
         </article>
         <article>
           <strong><Icon type="heart" /> Corazón</strong>
-          <span>Recupera 1 vida (máx. 6). Si estás lleno, da 80 puntos.</span>
+          <span>Recupera 1 vida. Sin límite máximo.</span>
         </article>
         <article>
           <strong><Icon type="rainbow" /> Cubo arcoíris</strong>
@@ -74,7 +74,7 @@ export default function InstructionsScreen({ onBack, engine }) {
         </article>
         <article>
           <strong><Icon type="lightning" /> Rayo</strong>
-          <span>Tecla <kbd>G</kbd>. Inicias con 4 cargas (máx. 4). Al activarlo, un relámpago cae del cielo y golpea todos los enemigos. Destruye los débiles y aturde a los grandes.</span>
+          <span>Tecla <kbd>G</kbd>. Un relámpago cae del cielo y golpea todos los enemigos. Destruye los débiles y aturde a los grandes. Sin límite de cargas.</span>
         </article>
         <article>
           <strong><Icon type="arrow" /> Lluvia de flechas</strong>
@@ -82,11 +82,11 @@ export default function InstructionsScreen({ onBack, engine }) {
         </article>
         <article>
           <strong><Icon type="ammo" /> Munición</strong>
-          <span>Recarga 3 balas (máx. 30). Si estás lleno, suma 60 puntos.</span>
+          <span>Recarga 8 balas. Sin límite máximo.</span>
         </article>
         <article>
           <strong><Icon type="crystal" /> Cristal</strong>
-          <span>Recarga 1 pulso (si falta). Si ya tienes el máximo, suma 120 puntos.</span>
+          <span>Recarga 1 pulso. Sin límite máximo.</span>
         </article>
         <article>
           <strong><Icon type="cannibal" /> Pacman caníbal</strong>
