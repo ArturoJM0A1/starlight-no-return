@@ -737,7 +737,6 @@ export function initGame(canvas, options = {}) {
     player.vy += vec.y * 240;
     player.dashCooldown = 0.75;
     player.dashTimer = 0.18;
-    player.invuln = Math.max(player.invuln, 0.34);
     state.shake = Math.max(state.shake, 4);
     addRipple(player.x, player.y, "#8cffb2", 112, 4);
     addParticles(player.x - vec.x * 30, player.y - vec.y * 30, "#8cffb2", 18, 220, 5);
