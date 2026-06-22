@@ -885,8 +885,8 @@ export function initGame(canvas, options = {}) {
     state.projectiles.push({
       x: player.x + dirX * (player.r + 5),
       y: player.y + dirY * (player.r + 5),
-      vx: dirX * 900,
-      vy: dirY * 900,
+      vx: dirX * 1300,
+      vy: dirY * 1300,
       r: 5,
       life: 2.2,
       color: "#ffd166"
@@ -1266,8 +1266,8 @@ export function initGame(canvas, options = {}) {
     let tx = 0;
     let ty = 0;
     if (input.pointer) {
-      tx = (input.pointerX - player.x) * 6.2;
-      ty = (input.pointerY - player.y) * 6.2;
+      tx = (input.pointerX - player.x) * 7.8;
+      ty = (input.pointerY - player.y) * 7.8;
     } else {
       tx = (Number(input.right) - Number(input.left)) * speed;
       ty = (Number(input.down) - Number(input.up)) * speed;
