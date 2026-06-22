@@ -121,7 +121,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 30px rgba(20, 189, 173, 0.7), 0 6px 18px rgba(0,0,0,0.4)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 18px rgba(20, 189, 173, 0.5), 0 4px 12px rgba(0,0,0,0.3)'; }}
         >
-          Top
+          Top Global
         </button>
       </div>
       <ContactFooter />
