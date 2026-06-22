@@ -1266,8 +1266,8 @@ export function initGame(canvas, options = {}) {
     let tx = 0;
     let ty = 0;
     if (input.pointer) {
-      tx = (input.pointerX - player.x) * 7.8;
-      ty = (input.pointerY - player.y) * 7.8;
+      tx = (input.pointerX - player.x) * 10;
+      ty = (input.pointerY - player.y) * 10;
     } else {
       tx = (Number(input.right) - Number(input.left)) * speed;
       ty = (Number(input.down) - Number(input.up)) * speed;
