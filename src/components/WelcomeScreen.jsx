@@ -114,7 +114,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           Iniciar sesión / Registrarse
         </button>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <button
           style={ghostBtn}
           onClick={() => setShowTop(true)}
