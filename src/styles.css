@@ -241,7 +241,9 @@ h3 {
 }
 
 .instruction-grid strong {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 6px;
   color: var(--gold);
   font-size: 1rem;

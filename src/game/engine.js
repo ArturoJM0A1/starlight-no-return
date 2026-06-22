@@ -2335,9 +2335,9 @@ export function initGame(canvas, options = {}) {
       ctx.stroke();
       ctx.fillStyle = "#f8e8b0";
       ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(a.x - 5, a.y + 8);
-      ctx.lineTo(a.x + 5, a.y + 8);
+      ctx.moveTo(a.x, a.y + 24);
+      ctx.lineTo(a.x - 5, a.y + 16);
+      ctx.lineTo(a.x + 5, a.y + 16);
       ctx.closePath();
       ctx.fill();
     }
