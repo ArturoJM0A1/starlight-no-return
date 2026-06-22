@@ -276,7 +276,7 @@ kbd {
 
 /* Footer de contacto */
 .contact-footer {
-  margin-top: 24px;
+  margin-top: 12px;
   padding: 12px 0;
   display: flex;
   flex-wrap: wrap;
