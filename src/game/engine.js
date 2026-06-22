@@ -65,6 +65,8 @@ export function initGame(canvas, options = {}) {
     lastTap: 0,
   };
 
+  let zeroTapTime = 0;
+
   const state = {
     mode: "welcome",
     paused: false,
@@ -250,15 +252,12 @@ export function initGame(canvas, options = {}) {
     });
     if (onModeChange) onModeChange("playing");
     const hud = $("hud");
-    const pauseButton = $("pauseButton");
     const muteButton = $("muteButton");
     const touchControls = $("touchControls");
     if (hud) hud.classList.remove("hidden");
-    if (pauseButton) pauseButton.classList.remove("hidden");
     if (muteButton) muteButton.classList.remove("hidden");
     if (touchControls) touchControls.classList.remove("hidden");
     if (shell) shell.classList.remove("paused");
-    if (pauseButton) pauseButton.textContent = "II";
     sfx("start");
   }
 
@@ -268,11 +267,9 @@ export function initGame(canvas, options = {}) {
     if (musicManager) musicManager.stopMusic();
     if (onModeChange) onModeChange("welcome");
     const hud = $("hud");
-    const pauseButton = $("pauseButton");
     const muteButton = $("muteButton");
     const touchControls = $("touchControls");
     if (hud) hud.classList.add("hidden");
-    if (pauseButton) pauseButton.classList.add("hidden");
     if (muteButton) muteButton.classList.add("hidden");
     if (touchControls) touchControls.classList.add("hidden");
     if (shell) shell.classList.remove("paused");
@@ -284,10 +281,8 @@ export function initGame(canvas, options = {}) {
     if (musicManager) musicManager.stopMusic();
     if (shell) shell.classList.remove("paused");
     const hud = $("hud");
-    const pauseButton = $("pauseButton");
     const touchControls = $("touchControls");
     if (hud) hud.classList.add("hidden");
-    if (pauseButton) pauseButton.classList.add("hidden");
     if (touchControls) touchControls.classList.add("hidden");
     state.best = Math.max(state.best, Math.round(state.score));
     localStorage.setItem("cohete-metamorfico-best", String(state.best));
@@ -302,9 +297,7 @@ export function initGame(canvas, options = {}) {
   function togglePause() {
     if (state.mode !== "playing") return;
     state.paused = !state.paused;
-    const pauseButton = $("pauseButton");
     if (shell) shell.classList.toggle("paused", state.paused);
-    if (pauseButton) pauseButton.textContent = state.paused ? "▶" : "II";
     sfx("click");
   }
 
@@ -2505,6 +2498,11 @@ export function initGame(canvas, options = {}) {
     if (event.code === "Escape" || event.code === "KeyP") {
       togglePause();
       return;
+    }
+    if (event.code === "Digit0") {
+      const now = performance.now();
+      if (now - zeroTapTime < 500) { togglePause(); zeroTapTime = 0; return; }
+      zeroTapTime = now;
     }
     if (event.code === "KeyM") {
       toggleMute();
