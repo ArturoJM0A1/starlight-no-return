@@ -966,7 +966,7 @@ export function initGame(canvas, options = {}) {
     const cx = player.x;
     const cy = player.y - 60;
     const radius = 280;
-    const count = 120 + Math.floor(Math.random() * 40);
+    const count = 250 + Math.floor(Math.random() * 100);
     state.arrowRainFX = { timer: 0.5, arrows: [] };
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -1049,7 +1049,7 @@ export function initGame(canvas, options = {}) {
     if (state.whirlpoolAbsorbCooldown <= 0 && state.whirlpoolRemaining > 0) {
       // Buscar el obstáculo más cercano dentro del radio
       let closest = null;
-      let closestDist = 220; // radio de absorción
+      let closestDist = 350; // radio de absorción
       for (const o of state.obstacles) {
         const d = dist(player, o);
         if (d < closestDist && !o.dead) {
@@ -1060,12 +1060,12 @@ export function initGame(canvas, options = {}) {
       if (closest) {
         closest.dead = true;
         state.whirlpoolRemaining--;
-        state.whirlpoolAbsorbCooldown = 0.25; // esperar 0.25s antes de la siguiente absorción
+        state.whirlpoolAbsorbCooldown = 0.12; // esperar 0.12s antes de la siguiente absorción
         addParticles(closest.x, closest.y, "#ffffff", 12, 220, 6);
         addFloating("🌀 Absorbido", closest.x, closest.y - 20, "#4ee7d5");
         sfx("whirlpool");
         // Pequeña bonificación
-        state.score += 50;
+        state.score += 100;
         vibrate(10);
       } else {
         // No hay obstáculos cercanos, reducimos remaining a cero para no buscar en vano
@@ -1412,21 +1412,11 @@ export function initGame(canvas, options = {}) {
       if (dist(player, p) < player.r + p.r) {
         p.dead = true;
         if (p.type === "heart") {
-          if (state.health < 6) {
-            state.health++;
-            addFloating("+ Vida", p.x, p.y - 28, "#ff6f91");
-          } else {
-            state.score += 80;
-            addFloating("+80", p.x, p.y - 28, "#ffd166");
-          }
+          state.health++;
+          addFloating("+ Vida", p.x, p.y - 28, "#ff6f91");
         } else if (p.type === "ammo") {
-          if (player.ammo < player.maxAmmo) {
-            player.ammo = Math.min(player.maxAmmo, player.ammo + 3);
-            addFloating("+ Munición", p.x, p.y - 28, "#ffd166");
-          } else {
-            state.score += 60;
-            addFloating("+60", p.x, p.y - 28, "#ffd166");
-          }
+          player.ammo += 3;
+          addFloating("+ Munición", p.x, p.y - 28, "#ffd166");
         } else if (p.type === "rainbow") {
           player.invisible = true;
           player.invisibleTimer = 4.0;
@@ -1450,8 +1440,8 @@ export function initGame(canvas, options = {}) {
           sfx("collect");
         } else if (p.type === "whirlpool") {
           // Activar remolino: 3 segundos, puede absorber hasta 6 obstáculos
-          state.whirlpoolTimer = 3.0;
-          state.whirlpoolRemaining = 6;
+          state.whirlpoolTimer = 4.0;
+          state.whirlpoolRemaining = 12;
           state.whirlpoolAbsorbCooldown = 0;
           addFloating("🌀 ¡Remolino activado! 🌀", p.x, p.y - 28, "#4ee7d5");
           addParticles(p.x, p.y, "#4ee7d5", 24, 220, 6);
@@ -1467,24 +1457,14 @@ export function initGame(canvas, options = {}) {
           // Efecto visual de onda de hielo
           addRipple(p.x, p.y, "#88ccff", 180, 4);
         } else if (p.type === "lightning") {
-          if (player.lightningCharges < 4) {
-            player.lightningCharges = Math.min(4, player.lightningCharges + 1);
-            addFloating("⚡ ¡Rayo almacenado! ⚡", p.x, p.y - 28, "#b8f4ff");
-          } else {
-            state.score += 100;
-            addFloating("+100", p.x, p.y - 28, "#ffd166");
-          }
+          player.lightningCharges++;
+          addFloating("⚡ ¡Rayo almacenado! ⚡", p.x, p.y - 28, "#b8f4ff");
           addParticles(p.x, p.y, "#b8f4ff", 20, 200, 5);
           sfx("collect");
           vibrate(12);
         } else if (p.type === "arrow") {
-          if (player.arrowRain < 99) {
-            player.arrowRain += 1;
-            addFloating("🏹 ¡Lluvia de flechas! 🏹", p.x, p.y - 28, "#ffd166");
-          } else {
-            state.score += 80;
-            addFloating("+80", p.x, p.y - 28, "#ffd166");
-          }
+          player.arrowRain++;
+          addFloating("🏹 ¡Lluvia de flechas! 🏹", p.x, p.y - 28, "#ffd166");
           addParticles(p.x, p.y, "#c8a45c", 20, 200, 5);
           sfx("collect");
           vibrate(12);
@@ -1498,13 +1478,8 @@ export function initGame(canvas, options = {}) {
           state.shake = Math.max(state.shake, 8);
           state.flash = Math.max(state.flash, 0.3);
         } else {
-          if (player.energy < player.maxEnergy) {
-            player.energy += 1;
-            addFloating("+ Pulso", p.x, p.y - 28, "#4ee7d5");
-          } else {
-            state.score += 120;
-            addFloating("+120", p.x, p.y - 28, "#ffd166");
-          }
+          player.energy += 1;
+          addFloating("+ Pulso", p.x, p.y - 28, "#4ee7d5");
           state.score += 45;
         }
           addParticles(p.x, p.y, p.type === "heart" ? "#ff6f91" : (p.type === "ammo" ? "#ffd166" : (p.type === "rainbow" ? "#ff00ff" : (p.type === "greenRocket" ? "#8cffb2" : (p.type === "whirlpool" ? "#4ee7d5" : (p.type === "ice" ? "#88ccff" : (p.type === "lightning" ? "#b8f4ff" : "#4ee7d5")))))), 16, 180, 4);
@@ -2421,10 +2396,11 @@ export function initGame(canvas, options = {}) {
     ctx.shadowColor = player.dashTimer > 0 ? "#8cffb2" : "#4ee7d5";
     ctx.shadowBlur = player.dashTimer > 0 ? 20 : 10;
 
+    const damaged = player.invuln > 0 && !player.invisible;
     const body = ctx.createLinearGradient(-18, -12, 24, 12);
-    body.addColorStop(0, "#eaf7ff");
-    body.addColorStop(0.46, "#8bdcff");
-    body.addColorStop(0.76, "#ffffff");
+    body.addColorStop(0, damaged ? "#ffcccc" : "#eaf7ff");
+    body.addColorStop(0.46, damaged ? "#ff6b6b" : "#8bdcff");
+    body.addColorStop(0.76, damaged ? "#ffaaaa" : "#ffffff");
     body.addColorStop(1, "#ff6f91");
     ctx.fillStyle = body;
     ctx.beginPath();
