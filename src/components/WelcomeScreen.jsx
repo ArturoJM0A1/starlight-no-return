@@ -13,7 +13,7 @@ const goldBtn = {
 };
 
 const ghostBtn = {
-  marginLeft: 8, padding: '0 6px', fontSize: '0.9rem', fontWeight: 700,
+  height: '60%', padding: '0 6px', fontSize: '0.9rem', fontWeight: 700,
   background: 'linear-gradient(135deg, #0d7377, #14bdad)',
   border: 0, borderRadius: 8,
   color: '#f8fbff', cursor: 'pointer', letterSpacing: '0.5px',
@@ -112,6 +112,8 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         >
           ✦ Iniciar sesión / Registrarse ✦
         </button>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
         <button
           style={ghostBtn}
           onClick={() => setShowTop(true)}
