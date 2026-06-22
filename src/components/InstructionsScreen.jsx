@@ -37,6 +37,10 @@ export default function InstructionsScreen({ onBack, engine }) {
           <span>Mouse.</span>
         </article>
         <article>
+          <strong>Pausa</strong>
+          <span>Tecla <kbd>Esc</kbd> o presiona <kbd>0</kbd> dos veces.</span>
+        </article>
+        <article>
           <strong>🔫 Disparar</strong>
           <span>Tecla <kbd>Q</kbd>. Munición limitada (30 balas). Recoge más.</span>
         </article>
