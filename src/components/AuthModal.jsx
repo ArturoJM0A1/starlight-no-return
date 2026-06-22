@@ -294,7 +294,7 @@ export default function AuthModal({ onClose, onAuth }) {
                 Regístrate
               </span>
               <br />
-              <span style={{ ...toggleLink, fontSize: '0.75rem' }} onClick={() => { setMode('forgot'); resetForm(); }}>
+              <span style={{ ...toggleLink, fontSize: '0.75rem', marginTop: 17, display: 'inline-block' }} onClick={() => { setMode('forgot'); resetForm(); }}>
                 Olvidé mi contraseña
               </span>
             </>
