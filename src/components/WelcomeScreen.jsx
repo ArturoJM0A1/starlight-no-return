@@ -64,12 +64,13 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         fontFamily: "'Euphorigenic', serif",
         fontSize: 'clamp(2rem, 6vw, 5rem)',
         padding: '14px 15px',
-        background: 'linear-gradient(135deg, #f6d365, #fda085, #f6d365)',
-        backgroundSize: '200% auto',
+        letterSpacing: '0.08em',
+        background: 'linear-gradient(135deg, #ffffff, #f8e8b0, #d4af37, #f8e8b0, #ffffff)',
+        backgroundSize: '250% auto',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         backgroundClip: 'text',
-        filter: 'drop-shadow(0 0 20px rgba(253,160,133,0.4)) drop-shadow(0 4px 8px rgba(0,0,0,0.5))',
+        filter: 'drop-shadow(0 0 15px rgba(212,175,55,0.4)) drop-shadow(0 0 40px rgba(212,175,55,0.15)) drop-shadow(0 4px 8px rgba(0,0,0,0.6))',
         animation: 'shimmerText 3s ease-in-out infinite',
       }}>
         Starlight: No Return

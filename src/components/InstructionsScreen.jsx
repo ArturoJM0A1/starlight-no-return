@@ -77,6 +77,10 @@ export default function InstructionsScreen({ onBack, engine }) {
           <strong>🏆 Puntuación</strong>
           <span>Gana puntos por esquivar, destruir enemigos y recoger objetos. Las cadenas aumentan la bonificación.</span>
         </article>
+        <article>
+          <strong>💰 Bonus +10000</strong>
+          <span>Aparece una moneda dorada en pantalla cada 2 minutos. Acércate para sumar 10000 puntos.</span>
+        </article>
       </div>
 
       <div className="welcome-actions">

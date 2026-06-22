@@ -1,5 +1,5 @@
 export function initGame(canvas, options = {}) {
-  const { shellRef, onModeChange } = options;
+  const { shellRef, onModeChange, musicManager } = options;
   const ctx = canvas.getContext("2d");
   const shell = shellRef ? shellRef.current : document.querySelector(".game-shell");
 
@@ -94,6 +94,7 @@ export function initGame(canvas, options = {}) {
     whirlpoolAbsorbCooldown: 0,
     frozenTimer: 0,
     lightningFX: [],
+    bonusTimer: 120,
   };
 
   const player = {
@@ -202,6 +203,7 @@ export function initGame(canvas, options = {}) {
       whirlpoolAbsorbCooldown: 0,
       frozenTimer: 0,
       lightningFX: [],
+      bonusTimer: 120,
     });
     Object.assign(player, {
       x: clamp(width * 0.22, 90, 190),
@@ -230,6 +232,22 @@ export function initGame(canvas, options = {}) {
   function startGame() {
     ensureAudio();
     resetGame();
+    if (musicManager) {
+      if (audioCtx) musicManager.setContext(audioCtx);
+      musicManager.startMusic();
+      musicManager.setIntensity(Math.min(0.15 + state.phaseIndex * 0.15, 1));
+    }
+    // Bonus inicial de 10000
+    state.pickups.push({
+      x: width - 120,
+      y: height * 0.5,
+      baseY: height * 0.5,
+      vx: 0,
+      r: 24,
+      phase: 0,
+      spin: 0,
+      type: "bonus10000",
+    });
     if (onModeChange) onModeChange("playing");
     const hud = $("hud");
     const pauseButton = $("pauseButton");
@@ -247,6 +265,7 @@ export function initGame(canvas, options = {}) {
   function returnHome() {
     state.mode = "welcome";
     state.paused = false;
+    if (musicManager) musicManager.stopMusic();
     if (onModeChange) onModeChange("welcome");
     const hud = $("hud");
     const pauseButton = $("pauseButton");
@@ -262,6 +281,7 @@ export function initGame(canvas, options = {}) {
   function showGameOver() {
     state.mode = "gameover";
     state.paused = false;
+    if (musicManager) musicManager.stopMusic();
     if (shell) shell.classList.remove("paused");
     const hud = $("hud");
     const pauseButton = $("pauseButton");
@@ -945,8 +965,8 @@ export function initGame(canvas, options = {}) {
     player.arrowRain -= 1;
     const cx = player.x;
     const cy = player.y - 60;
-    const radius = 160;
-    const count = 30 + Math.floor(Math.random() * 12);
+    const radius = 280;
+    const count = 55 + Math.floor(Math.random() * 20);
     state.arrowRainFX = { timer: 0.5, arrows: [] };
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -1192,6 +1212,29 @@ export function initGame(canvas, options = {}) {
       }
     }
 
+    // Bonus de 10000 puntos (aparece como pickup, solo uno a la vez)
+    state.bonusTimer -= dt;
+    if (state.bonusTimer <= 0) {
+      const existing = state.pickups.some((p) => p.type === "bonus10000" && !p.dead);
+      if (!existing) {
+        state.bonusTimer = 120;
+        const bx = rand(100, width - 100);
+        const by = rand(80, height - 80);
+        state.pickups.push({
+          x: bx,
+          y: by,
+          baseY: by,
+          vx: 0,
+          r: 24,
+          phase: 0,
+          spin: 0,
+          type: "bonus10000",
+        });
+        addFloating("💰 +10000 apareció!", bx, by - 40, "#ffd700");
+        addParticles(bx, by, "#ffd700", 20, 200, 5);
+      }
+    }
+
     updatePhase(dt);
     updatePlayer(dt);
     updateSpawning(dt);
@@ -1212,6 +1255,13 @@ export function initGame(canvas, options = {}) {
     if (state.phaseTime > phase.duration) {
       state.phaseTime = 0;
       state.phaseIndex = (state.phaseIndex + 1) % PHASES.length;
+      if (musicManager) {
+        const idx = state.phaseIndex;
+        const intensities = [0.15, 0.4, 0.8, 0.25];
+        const base = intensities[idx % intensities.length];
+        const cycle = Math.floor(state.phaseIndex / 4) * 0.15;
+        musicManager.setIntensity(Math.min(base + cycle, 1));
+      }
       showPhaseToast(currentPhase().toast);
       addRipple(width * 0.5, height * 0.5, currentPhase().color, Math.max(width, height), 2);
       sfx("click");
@@ -1438,6 +1488,15 @@ export function initGame(canvas, options = {}) {
           addParticles(p.x, p.y, "#c8a45c", 20, 200, 5);
           sfx("collect");
           vibrate(12);
+        } else if (p.type === "bonus10000") {
+          state.score += 10000;
+          addFloating("💰 +10000", p.x, p.y - 32, "#ffd700");
+          addParticles(p.x, p.y, "#ffd700", 40, 350, 8);
+          addRipple(p.x, p.y, "#ffd700", 200, 6);
+          sfx("explosion");
+          vibrate(50);
+          state.shake = Math.max(state.shake, 8);
+          state.flash = Math.max(state.flash, 0.3);
         } else {
           if (player.energy < player.maxEnergy) {
             player.energy += 1;
@@ -2125,6 +2184,21 @@ export function initGame(canvas, options = {}) {
       ctx.beginPath();
       ctx.rect(-r * 0.3, -r * 0.08, r * 0.5, r * 0.16);
       ctx.fill();
+    } else if (p.type === "bonus10000") {
+      ctx.shadowColor = "#ffd700";
+      ctx.fillStyle = "#ffd700";
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.9, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = "#ffec8a";
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.6, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = "#b8860b";
+      ctx.font = `bold ${r * 0.7}px monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("$", 0, 1);
     } else {
       ctx.shadowColor = "#4ee7d5";
       const grad = ctx.createLinearGradient(-r, -r, r, r);
