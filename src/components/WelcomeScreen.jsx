@@ -13,7 +13,7 @@ const goldBtn = {
 };
 
 const ghostBtn = {
-  height: '100%', padding: '4px 12px', fontSize: '0.9rem', fontWeight: 700, marginTop :'22px'
+  height: '100%', padding: '4px 12px', fontSize: '0.9rem', fontWeight: 700, marginTop :'22px',
   background: 'linear-gradient(135deg, #0d7377, #14bdad)',
   border: 0, borderRadius: 8,
   color: '#f8fbff', cursor: 'pointer', letterSpacing: '0.5px',
