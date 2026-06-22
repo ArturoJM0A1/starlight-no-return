@@ -219,7 +219,7 @@ export function initGame(canvas, options = {}) {
       dashTimer: 0,
       pulseCooldown: 0,
       shotCooldown: 0,
-      invuln: 1.2,
+      invuln: 0,
       invisible: false,
       invisibleTimer: 0,
       flame: 0,
