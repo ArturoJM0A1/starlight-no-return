@@ -13,7 +13,7 @@ export default function HUD() {
       </div>
       <div className="hud-panel energy-panel">
         <span>Pulso</span>
-        <div id="energyDots" className="energy-dots" aria-label="Cargas de pulso"></div>
+        <strong id="energyValue">5</strong>
       </div>
       <div className="hud-panel ammo-panel">
         <span>Balas</span>

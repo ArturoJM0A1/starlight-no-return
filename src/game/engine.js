@@ -432,19 +432,14 @@ export function initGame(canvas, options = {}) {
     const phaseValue = $("phaseValue");
     const healthValue = $("healthValue");
     const ammoValue = $("ammoValue");
-    const energyDots = $("energyDots");
+    const energyDots = $("energyValue");
     if (!scoreValue) return;
     scoreValue.textContent = Math.round(state.score).toLocaleString("es-MX");
     phaseValue.textContent = currentPhase().name;
     phaseValue.style.color = currentPhase().color;
     healthValue.textContent = state.health;
     ammoValue.textContent = player.ammo;
-    energyDots.innerHTML = "";
-    for (let i = 0; i < player.maxEnergy; i += 1) {
-      const dot = document.createElement("span");
-      dot.className = `energy-dot${i < player.energy ? " full" : ""}`;
-      energyDots.appendChild(dot);
-    }
+    energyDots.textContent = player.energy;
     const invisibleIndicator = document.getElementById("invisibleIndicator");
     if (invisibleIndicator) {
       if (player.invisible && player.invisibleTimer > 0) {

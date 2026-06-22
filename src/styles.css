@@ -396,30 +396,6 @@ kbd {
   color: var(--gold);
 }
 
-.energy-dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  height: 22px;
-  margin-top: 5px;
-}
-
-.energy-dot {
-  width: 14px;
-  height: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.energy-dot.full {
-  background:
-    radial-gradient(circle at 38% 34%, #ffffff 0 18%, transparent 19%),
-    linear-gradient(135deg, var(--aqua), var(--violet));
-  box-shadow: 0 0 10px rgba(78, 231, 213, 0.55);
-}
-
 /* Paneles adicionales (invisibilidad, aliado) se añaden dinámicamente */
 #invisibleIndicator,
 #allyIndicator {
@@ -605,10 +581,6 @@ kbd {
   }
   .hud-panel strong {
     font-size: 0.9rem;
-  }
-  .energy-dot {
-    width: 10px;
-    height: 10px;
   }
   .top-actions {
     top: auto;
