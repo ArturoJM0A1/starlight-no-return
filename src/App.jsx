@@ -8,7 +8,6 @@ import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
 import PhaseToast from './components/PhaseToast';
 import ComboToast from './components/ComboToast';
-import TopActions from './components/TopActions';
 import TouchControls from './components/TouchControls';
 import UserBadge from './components/UserBadge';
 
@@ -120,7 +119,6 @@ export default function App() {
           <HUD />
           <PhaseToast />
           <ComboToast />
-          <TopActions engine={engineRef} />
           <TouchControls engine={engineRef} />
         </>
       )}

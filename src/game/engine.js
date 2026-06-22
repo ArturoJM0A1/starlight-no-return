@@ -253,10 +253,8 @@ export function initGame(canvas, options = {}) {
     });
     if (onModeChange) onModeChange("playing");
     const hud = $("hud");
-    const muteButton = $("muteButton");
     const touchControls = $("touchControls");
     if (hud) hud.classList.remove("hidden");
-    if (muteButton) muteButton.classList.remove("hidden");
     if (touchControls) touchControls.classList.remove("hidden");
     if (shell) shell.classList.remove("paused");
     sfx("start");
@@ -268,10 +266,8 @@ export function initGame(canvas, options = {}) {
     if (musicManager) musicManager.stopMusic();
     if (onModeChange) onModeChange("welcome");
     const hud = $("hud");
-    const muteButton = $("muteButton");
     const touchControls = $("touchControls");
     if (hud) hud.classList.add("hidden");
-    if (muteButton) muteButton.classList.add("hidden");
     if (touchControls) touchControls.classList.add("hidden");
     if (shell) shell.classList.remove("paused");
   }
@@ -304,13 +300,6 @@ export function initGame(canvas, options = {}) {
 
   function toggleMute() {
     muted = !muted;
-    const muteButton = $("muteButton");
-    const muteButtonIntro = $("muteButtonIntro");
-    if (muteButton) muteButton.textContent = muted ? "×" : "♪";
-    if (muteButtonIntro) {
-      muteButtonIntro.setAttribute("aria-pressed", String(muted));
-      muteButtonIntro.textContent = muted ? "Silenciado" : "Sonido";
-    }
   }
 
   function ensureAudio() {

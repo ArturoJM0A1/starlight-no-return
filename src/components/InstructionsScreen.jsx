@@ -50,7 +50,7 @@ export default function InstructionsScreen({ onBack, engine }) {
         </article>
         <article>
           <strong>✨ Pulso Prisma</strong>
-          <span>Tecla <kbd>E</kbd>. Gasta 1 carga de pulso (máx. 5). Destruye enemigos cercanos y empuja los magnéticos.</span>
+          <span>Tecla <kbd>E</kbd>. Gasta 1 carga de pulso. Destruye enemigos cercanos y empuja los magnéticos.</span>
         </article>
         <article>
           <strong><Icon type="heart" /> Corazón</strong>
