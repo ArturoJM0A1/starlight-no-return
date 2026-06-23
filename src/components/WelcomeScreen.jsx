@@ -60,11 +60,11 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
          }
          .signature {
            font-family: 'Segoe UI', 'Arial', sans-serif;
-           font-size: 0.85rem;
+           font-size: 1rem;
            font-weight: 700;
            letter-spacing: 0.12em;
            color: #ffffff;
-           background: linear-gradient(135deg, #ffffff 0%, #f0f2f5 50%, #e8ecf0 100%);
+           background: linear-gradient(135deg, #ffffff 0%, #ffffff 50%, #f5f7fa 100%);
            -webkit-background-clip: text;
            background-clip: text;
            -webkit-text-fill-color: transparent;
