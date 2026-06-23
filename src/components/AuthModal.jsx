@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { registerUser, loginUser, getUserProfile, resetPassword } from '../firebase';
 
+// El nombre de usuario debe comenzar con @, solo letras y números, máximo 15 caracteres
 const VALID_USERNAME = /^@[a-zA-Z0-9]+$/;
 
 function validateUsername(val) {
@@ -80,6 +81,7 @@ export default function AuthModal({ onClose, onAuth }) {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [welcomeUser, setWelcomeUser] = useState('');
+  // Alterna visibilidad de la contraseña (icono de ojo)
   const [showPassword, setShowPassword] = useState(false);
 
   function resetForm() {

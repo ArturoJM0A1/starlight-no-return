@@ -22,6 +22,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+// Guardia: solo inicializa Firebase si las variables .env están presentes (fallback de desarrollo)
 const hasConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
 
 let auth = null;
@@ -56,6 +57,7 @@ export async function registerUser(username, email, password) {
   return cred.user;
 }
 
+// Inicio de sesión mediante nombre de usuario → búsqueda de email (colección usernames almacena uid + email)
 export async function loginUser(username, password) {
   if (!auth) required();
   const map = await getDoc(doc(db, 'usernames', username.toLowerCase()));
@@ -100,6 +102,7 @@ export async function getTopPlayers(count = 200) {
     }));
 }
 
+// Restablecimiento de contraseña: verifica que el email coincida con el usuario antes de enviar
 export async function resetPassword(username, email) {
   if (!db || !auth) required();
   const map = await getDoc(doc(db, 'usernames', username.toLowerCase()));

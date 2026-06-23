@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+// Variable a nivel de módulo: la variante start aparece solo una vez por sesión.
+// Las variantes gameover/welcome/instructions no tienen esa restricción.
 let startShown = false;
 
 export default function StartMascot({ user, variant = 'start' }) {
@@ -18,6 +20,7 @@ export default function StartMascot({ user, variant = 'start' }) {
   if (!visible) return null;
 
   const name = user ? user.username : null;
+  // Posición según variante: instructions → arriba‑izquierda; todas las demás → abajo‑izquierda
   const isGameOver = variant === 'gameover';
   const isWelcome = variant === 'welcome';
   const isInstructions = variant === 'instructions';

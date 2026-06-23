@@ -3,9 +3,13 @@ export function initGame(canvas, options = {}) {
   const ctx = canvas.getContext("2d");
   const shell = shellRef ? shellRef.current : document.querySelector(".game-shell");
 
+  // Atajo para getElementById
   function $(id) { return document.getElementById(id); }
 
   const TAU = Math.PI * 20;
+  // ── Definiciones de fase ──────────────────────────────────
+  // El juego cicla 4 fases: Calma → Ascenso → Tormenta → Respiro.
+  // Cada ciclo completo (4 fases) suma +0.15 a la intensidad musical permanentemente.
   const PHASES = [
     {
       name: "Calma",
@@ -54,6 +58,8 @@ export function initGame(canvas, options = {}) {
   let audioCtx = null;
   let muted = false;
 
+  // ── Estado de entrada ────────────────────────────────────
+  // lastTap rastrea doble toque del puntero para dash (ventana de 280ms)
   const input = {
     up: false,
     down: false,
@@ -65,6 +71,7 @@ export function initGame(canvas, options = {}) {
     lastTap: 0,
   };
 
+  // Rastrea última pulsación de "0" (ventana 500ms) para pausa con doble 0
   let zeroTapTime = 0;
 
   const state = {
@@ -91,15 +98,18 @@ export function initGame(canvas, options = {}) {
     floating: [],
     stars: [],
     ally: null,
-    // Nuevos estados para power-ups
-    whirlpoolTimer: 0,
-    whirlpoolRemaining: 0,
-    whirlpoolAbsorbCooldown: 0,
-    frozenTimer: 0,
-    lightningFX: [],
-    bonusTimer: 120,
+    // ── Estados de power‑ups (acumulables, sin tope máximo) ─
+    whirlpoolTimer: 0,            // segundos restantes
+    whirlpoolRemaining: 0,        // obstáculos por absorber en esta activación
+    whirlpoolAbsorbCooldown: 0,   // enfriamiento entre absorciones (0.12s)
+    frozenTimer: 0,               // duración restante de congelación
+    lightningFX: [],              // efectos visuales de rayos activos
+    bonusTimer: 120,              // cuenta regresiva para siguiente moneda +10000
   };
 
+  // ── Estado del jugador ────────────────────────────────────
+  // r: radio (14px), invuln: frames de invulnerabilidad tras golpe,
+  // lastDashVector: dirección cacheada para dash inteligente
   const player = {
     x: 150,
     y: 240,
@@ -136,6 +146,7 @@ export function initGame(canvas, options = {}) {
     return Math.hypot(a.x - b.x, a.y - b.y);
   }
 
+  // Normaliza un vector; por defecto (1,0) si la magnitud es casi cero
   function normalize(x, y) {
     const len = Math.hypot(x, y);
     if (len < 0.001) return { x: 1, y: 0 };
@@ -177,6 +188,8 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Reinicia todo el estado del juego para una nueva partida.
+  // Los temporizadores de power‑ups (whirlpool, frozen, etc.) inician en 0 — sin arrastre.
   function resetGame() {
     obstacleId = 0;
     magnetId = 0;
@@ -232,6 +245,8 @@ export function initGame(canvas, options = {}) {
     updateHud();
   }
 
+  // Inicia una nueva partida. Llamado externamente desde React (botón de InstructionsScreen).
+  // Genera la moneda bonus10000 inicial y sincroniza el AudioContext de Tone.js con el del motor.
   function startGame() {
     ensureAudio();
     resetGame();
@@ -240,7 +255,7 @@ export function initGame(canvas, options = {}) {
       musicManager.startMusic();
       musicManager.setIntensity(Math.min(0.15 + state.phaseIndex * 0.15, 1));
     }
-    // Bonus inicial de 10000
+    // Genera moneda bonus +10000 inicial al centro-derecha
     state.pickups.push({
       x: width - 120,
       y: height * 0.5,
@@ -307,6 +322,8 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Crea AudioContext bajo demanda en la primera interacción del usuario (debe ser dentro de un gesto).
+  // Resume es idempotente — se puede llamar múltiples veces sin problema.
   function ensureAudio() {
     if (!audioCtx) {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -317,6 +334,10 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Sistema de SFX procedural ────────────────────────────
+  // Genera todos los efectos de sonido desde osciladores (sin archivos de audio).
+  // Cada tipo mapea a una función que crea 1-3 osciladores con
+  // barridos de frecuencia, envolventes de ganancia y detune opcional.
   function sfx(type) {
     if (muted || !audioCtx) return;
     const now = audioCtx.currentTime;
@@ -340,6 +361,9 @@ export function initGame(canvas, options = {}) {
       return osc;
     };
 
+    // ── Definiciones de tipos de SFX ────────────────────────
+    // Cada clave mapea a una función que configura osciladores.
+    // Patrones: barridos de tono ascendentes/descendentes, armónicos en capas, ráfagas de diente de sierra.
     const configs = {
       start: () => {
         master.gain.exponentialRampToValueAtTime(0.2, now + 0.02);
@@ -421,6 +445,9 @@ export function initGame(canvas, options = {}) {
     if (navigator.vibrate) navigator.vibrate(pattern);
   }
 
+  // Actualiza todos los elementos del HUD con el estado actual del juego.
+  // Se llama cada frame via update() y cada vez que una estadística cambia al instante.
+  // Los indicadores de power‑ups se muestran/ocultan dinámicamente según el estado activo.
   function updateHud() {
     const scoreValue = $("scoreValue");
     const phaseValue = $("phaseValue");
@@ -536,6 +563,9 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Fábrica de obstáculos ─────────────────────────────────
+  // Crea un obstáculo con propiedades según su tipo (radio, velocidad, deriva, giro).
+  // El parámetro `group` enlaza obstáculos magnéticamente (pares en Tormenta/Ascenso).
   function makeObstacle(type, x, y, group = null) {
     const phase = currentPhase();
     const difficulty = 1 + state.distance / 6200;
@@ -598,6 +628,7 @@ export function initGame(canvas, options = {}) {
     return common;
   }
 
+  // Distribución de tipos de obstáculo según la fase. Cannibal tiene ~18% fijo de probabilidad.
   function obstacleWeight() {
     const phase = currentPhase().name;
     const base = [];
@@ -613,6 +644,9 @@ export function initGame(canvas, options = {}) {
     return obstacleWeight();
   }
 
+  // Elige una posición Y para generar que evite aglomeraciones.
+  // Puntúa candidatos por: distancia de obstáculos existentes adelante,
+  // proximidad al jugador (prefiriendo cercanía) y sesgo hacia el centro.
   function clearSpawnY() {
     const top = Math.max(100, height * 0.18);
     const bottom = height - Math.max(88, height * 0.18);
@@ -639,6 +673,7 @@ export function initGame(canvas, options = {}) {
     return best;
   }
 
+  // Genera un obstáculo (o par magnético). Los cannibales pueden aparecer desde cualquier lado.
   function spawnObstacle() {
     const type = pickObstacleType();
     if (type === "cannibal") {
@@ -738,6 +773,13 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Selección inteligente de dirección de dash ───────────
+  // 1. Flechas del teclado → usar esa dirección.
+  // 2. Puntero a > 38px → dash hacia el puntero.
+  // 3. Si no → puntuar vectores candidatos por:
+  //    - recompensar avance horizontal (derecha = bueno)
+  //    - castigar proximidad a obstáculos (con predicción de posición futura)
+  //    - evitar bordes; preferir el centro
   function chooseDashVector() {
     const dx = Number(input.right) - Number(input.left);
     const dy = Number(input.down) - Number(input.up);
@@ -782,6 +824,10 @@ export function initGame(canvas, options = {}) {
     return best;
   }
 
+  // ── Pulso (explosión de energía) ──────────────────────────
+  // Destruye obstáculos dentro de 192px (anillo: imanes enlazados también destruidos).
+  // Empuja obstáculos grandes dentro de 302px (excepto cannibales).
+  // Costo: 1 energía. Enfriamiento: 0.42s.
   function triggerPulse() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.pulseCooldown > 0 || player.energy <= 0) {
@@ -886,6 +932,10 @@ export function initGame(canvas, options = {}) {
     updateHud();
   }
 
+  // ── Rayo ─────────────────────────────────────────────────
+  // Golpea todos los obstáculos en pantalla: los pequeños (r<40, shard, cannibal) mueren,
+  // los grandes quedan aturdidos (2s). Muestra FX de rayo desde arriba a cada objetivo.
+  // Costo: 1 carga. Sin enfriamiento.
   function triggerLightning() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.lightningCharges <= 0) {
@@ -939,6 +989,10 @@ export function initGame(canvas, options = {}) {
     updateHud();
   }
 
+  // ── Lluvia de flechas ────────────────────────────────────
+  // Invoca 250–349 flechas cayendo del cielo en un radio de 280px alrededor del jugador.
+  // Cada flecha golpea un obstáculo (sin sobrekill). Duración: 0.5s.
+  // Costo: 1 carga. Solo una lluvia activa a la vez.
   function triggerArrowRain() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.arrowRain <= 0) { sfx("empty"); return; }
@@ -992,6 +1046,9 @@ export function initGame(canvas, options = {}) {
     return o.r;
   }
 
+  // ── Detección de colisiones ──────────────────────────────
+  // Los obstáculos tipo anillo colisionan tanto en la pared (anillo) como en el centro.
+  // El power‑up de invisibilidad otorga inmunidad sin importar el tipo de obstáculo.
   function collidesWithPlayer(o) {
     if (player.invisible && player.invisibleTimer > 0) return false;
     const d = dist(player, o);
@@ -1125,6 +1182,9 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Actualización de lluvia de flechas ────────────────────
+  // Cada flecha puede golpear un solo obstáculo (el primero que encuentra).
+  // Los impactos destruyen el obstáculo y generan partículas.
   function updateArrowRainFX(dt) {
     if (!state.arrowRainFX) return;
     state.arrowRainFX.timer -= dt;
@@ -1231,6 +1291,10 @@ export function initGame(canvas, options = {}) {
     updateHud();
   }
 
+  // ── Ciclo de fases ───────────────────────────────────────
+  // Atraviesa 4 fases: Calma → Ascenso → Tormenta → Respiro.
+  // Cada ciclo completo (4 fases) suma +0.15 a la intensidad musical permanentemente.
+  // La intensidad se reinicia al comenzar nueva partida, no al cambiar de fase.
   function updatePhase(dt) {
     state.phaseTime += dt;
     const phase = currentPhase();
@@ -1250,11 +1314,16 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Movimiento del jugador (seguimiento con lerp) ────────
+  // Puntero: seguimiento exponencial (factor 10), no teletransporte.
+  // Flechas: diagonal normalizada, velocidad constante.
+  // Partículas de humo del escape tras la nave.
   function updatePlayer(dt) {
     const speed = player.dashTimer > 0 ? 580 : 330;
     let tx = 0;
     let ty = 0;
     if (input.pointer) {
+      // Pointer mode: target velocity proportional to distance
       tx = (input.pointerX - player.x) * 10;
       ty = (input.pointerY - player.y) * 10;
     } else {
@@ -1266,6 +1335,7 @@ export function initGame(canvas, options = {}) {
       }
     }
 
+    // Interpolación suave de velocidad
     player.vx += (tx - player.vx) * Math.min(1, dt * 10);
     player.vy += (ty - player.vy) * Math.min(1, dt * 10);
     player.x += player.vx * dt;
@@ -1277,7 +1347,7 @@ export function initGame(canvas, options = {}) {
     player.y = clamp(player.y, top, height - 44);
     player.flame += dt * (player.dashTimer > 0 ? 22 : 9);
     player.tilt += ((player.vy / 520) - player.tilt) * Math.min(1, dt * 8);
-    // Spawn smoke from exhaust
+    // Genera humo del escape
     const exhaustX = player.x - Math.cos(player.tilt) * 24;
     const exhaustY = player.y + Math.sin(player.tilt) * 24;
     state.smoke.push({
@@ -1321,9 +1391,15 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Actualización de obstáculos ───────────────────────────
+  // Cannibal: persigue al jugador con IA, aceleración limitada y vida útil.
+  // No‑cannibal: oscilación vertical sinusoidal + deriva horizontal.
+  // Aturdido: sin movimiento. Congelado: 95% de ralentización (0.05×).
+  // Detección de near‑miss: recompensa pases precisos (detrás del jugador, <42px de distancia).
   function updateObstacles(dt) {
     for (const o of state.obstacles) {
       if (o.type === "cannibal") {
+        // Cannibal has limited lifespan; dies when it expires
         if (o.lifeSpan !== undefined) {
           o.lifeSpan -= dt;
           if (o.lifeSpan <= 0) {
@@ -1355,13 +1431,14 @@ export function initGame(canvas, options = {}) {
       } else {
         o.phase += dt * o.drift;
         o.angle += dt * o.spin;
-        // Si está aturdido, no se mueve
+        // Stunned: stop all movement
         if (o.stunTimer > 0) {
           // No se mueve
         } else if (state.frozenTimer <= 0) {
           o.x += o.vx * dt;
           o.y = o.baseY + Math.sin(o.phase + o.seed) * o.amp;
         } else {
+          // Frozen: only 5% horizontal drift
           o.x += o.vx * dt * 0.05;
         }
         o.pulseGlow = Math.max(0, o.pulseGlow - dt * 1.7);
@@ -1413,6 +1490,10 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Actualización de pickups ──────────────────────────────
+  // 8 tipos de pickup con distribución ponderada. Todos los power‑ups son
+  // acumulables (invisibleTimer, whirlpoolTimer, etc. suman duración).
+  // bonus10000 da +10,000 puntos al instante y FX especiales.
   function updatePickups(dt) {
     for (const p of state.pickups) {
       p.phase += dt * 2.2;
@@ -1668,6 +1749,9 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Sombra dinámica de obstáculo ──────────────────────────
+  // Proyecta una sombra desde una fuente de luz virtual (arriba‑izquierda del jugador).
+  // Distancia + distorsión de forma según el tipo de obstáculo.
   function drawObstacleShadow(o, strength = 1) {
     if (o.type === "cannibal") return;
     const lightX = player.x - 42;
@@ -1704,6 +1788,10 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // ── Renderizado de obstáculos ─────────────────────────────
+  // reveal: obstáculos a <190px o activados por pulso muestran su forma detallada.
+  // Capa de hielo (brillo azul, composite lighter) cuando state.frozenTimer > 0.
+  // Obstáculos aturdidos obtienen un efecto de choque verdoso.
   function drawObstacle(o, forceReveal = false) {
     const reveal = forceReveal || (o.type !== "cannibal" && (dist(player, o) < 190 || o.pulseGlow > 0.01));
     ctx.save();
@@ -2518,6 +2606,9 @@ export function initGame(canvas, options = {}) {
     if (code === "ArrowRight" || code === "KeyD") input.right = down;
   }
 
+  // ── Manejador de teclado ─────────────────────────────────
+  // Doble 0 (Digit0 dentro de 500ms) activa/desactiva pausa sin interferir con
+  // 0 simple (que no se usa — solo importa el doble toque).
   function handleKeyDown(event) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(event.code)) {
       event.preventDefault();
@@ -2593,6 +2684,9 @@ export function initGame(canvas, options = {}) {
     togglePause,
     triggerDash,
     triggerPulse,
+    // ══ API pública: limpieza ══════════════════════════════
+    // Debe llamarse al desmontar el componente (limpieza del useEffect en App.jsx).
+    // Elimina todos los event listeners registrados y detiene el bucle de renderizado.
     destroy() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);

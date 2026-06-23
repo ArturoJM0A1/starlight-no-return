@@ -21,6 +21,7 @@ export default function App() {
   const canvasRef = useRef(null);
   const userRef = useRef(null);
 
+  // Mantiene una versión del usuario sincronizada con ref para callbacks del motor (evita closures obsoletas)
   function syncUser(u) {
     userRef.current = u;
     setUser(u);
@@ -49,6 +50,7 @@ export default function App() {
     }
   }, []);
 
+  // Inicializa el motor al montar; destruye al desmontar (limpia todos los listeners)
   useEffect(() => {
     if (!canvasRef.current) return;
     const engine = initGame(canvasRef.current, {
@@ -62,6 +64,7 @@ export default function App() {
     };
   }, [handleModeChange]);
 
+  // Persiste el estado de autenticación al recargar la página (Firebase onAuthStateChanged)
   useEffect(() => {
     if (!auth) return;
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
