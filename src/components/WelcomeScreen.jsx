@@ -61,7 +61,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
       `}</style>
       <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
         <img src="/logo.png" alt="logo" style={{ width: 120, borderRadius: 20 }} />
-        <span style={{ fontSize: '0.65rem', color: '#f6d365', fontWeight: 600, textShadow: '0 0 8px rgba(246,211,101,0.3)', letterSpacing: '0.5px' }}>Descargar (próximamente)</span>
+        <span style={{ fontSize: '1.2rem', filter: 'drop-shadow(0 0 6px rgba(246,211,101,0.5))' }}>📥</span>
       </div>
       <div className="brand-row">
         <div className="mini-rocket" aria-hidden="true"></div>
