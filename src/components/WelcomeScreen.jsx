@@ -63,8 +63,8 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
            font-size: 0.85rem;
            font-weight: 700;
            letter-spacing: 0.12em;
-           color: #f0f2f5;
-           background: linear-gradient(135deg, #ffffff 0%, #e0e4e8 40%, #f5f7fa 60%, #d0d4dc 100%);
+           color: #ffffff;
+           background: linear-gradient(135deg, #ffffff 0%, #f0f2f5 50%, #e8ecf0 100%);
            -webkit-background-clip: text;
            background-clip: text;
            -webkit-text-fill-color: transparent;
@@ -75,7 +75,6 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
              0 4px 0 #5a5e66,
              0 5px 6px rgba(0,0,0,0.4),
              0 0 8px rgba(200,204,212,0.15);
-           transform: perspective(400px) rotateX(2deg);
            user-select: none;
          }
        `}</style>
