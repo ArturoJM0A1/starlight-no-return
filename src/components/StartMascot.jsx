@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
 
-let shown = false;
+let startShown = false;
 
-export default function StartMascot({ user }) {
-  const [visible, setVisible] = useState(!shown);
+export default function StartMascot({ user, variant = 'start' }) {
+  const oneTime = variant === 'start' ? !startShown : true;
+  const [visible, setVisible] = useState(oneTime);
 
   useEffect(() => {
-    if (shown) return;
-    shown = true;
+    if (variant === 'start') {
+      if (startShown) return;
+      startShown = true;
+    }
     const timer = setTimeout(() => setVisible(false), 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [variant]);
 
   if (!visible) return null;
 
   const name = user ? user.username : null;
+  const isGameOver = variant === 'gameover';
 
   return (
     <div style={{
@@ -121,8 +125,10 @@ export default function StartMascot({ user }) {
       </svg>
 
       <div style={{
-        background: 'linear-gradient(135deg, #f8e8b0, #f0d890)',
-        border: '2px solid #d4af37',
+        background: isGameOver
+          ? 'linear-gradient(135deg, #f0d0d0, #e8b8b8)'
+          : 'linear-gradient(135deg, #f8e8b0, #f0d890)',
+        border: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
         borderRadius: '0 8px 8px 8px',
         padding: '6px 12px',
         fontSize: '0.8rem',
@@ -136,13 +142,13 @@ export default function StartMascot({ user }) {
         <div style={{
           position: 'absolute', top: -2,
           width: 8, height: 8,
-          background: '#f0d890',
-          borderLeft: '2px solid #d4af37',
-          borderTop: '2px solid #d4af37',
+          background: isGameOver ? '#e8b8b8' : '#f0d890',
+          borderLeft: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
+          borderTop: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
           transform: 'rotate(45deg)',
           left: 6,
         }} />
-        Suerte{name ? `, ${name}` : ''}
+        {isGameOver ? 'upss, F :(' : `Suerte${name ? `, ${name}` : ''}`}
       </div>
     </div>
   );

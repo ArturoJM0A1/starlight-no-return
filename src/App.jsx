@@ -106,12 +106,15 @@ export default function App() {
         />
       )}
       {mode === 'gameover' && (
-        <GameOverScreen
-          stats={gameOverStats}
-          engine={engineRef}
-          onHome={() => setMode('instructions')}
-          user={user}
-        />
+        <>
+          <StartMascot user={user} variant="gameover" />
+          <GameOverScreen
+            stats={gameOverStats}
+            engine={engineRef}
+            onHome={() => setMode('instructions')}
+            user={user}
+          />
+        </>
       )}
 
       {isPlaying && (
