@@ -8,7 +8,7 @@ export default function StartMascot({ user }) {
   useEffect(() => {
     if (shown) return;
     shown = true;
-    const timer = setTimeout(() => setVisible(false), 1000);
+    const timer = setTimeout(() => setVisible(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -24,68 +24,119 @@ export default function StartMascot({ user }) {
       zIndex: 20,
       display: 'flex',
       alignItems: 'flex-end',
-      gap: 2,
+      gap: 4,
       pointerEvents: 'none',
       userSelect: 'none',
     }}>
+      <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
+        <defs>
+          <radialGradient id="bodyGlow" cx="40%" cy="30%" r="60%">
+            <stop offset="0%" stopColor="#ee4455" />
+            <stop offset="60%" stopColor="#cc2233" />
+            <stop offset="100%" stopColor="#991122" />
+          </radialGradient>
+          <radialGradient id="headGlow" cx="40%" cy="25%" r="65%">
+            <stop offset="0%" stopColor="#ff5566" />
+            <stop offset="50%" stopColor="#dd3344" />
+            <stop offset="100%" stopColor="#aa1a2a" />
+          </radialGradient>
+          <radialGradient id="chestGlow" cx="50%" cy="30%" r="60%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="50%" stopColor="#f0f2f5" />
+            <stop offset="100%" stopColor="#d0d4dc" />
+          </radialGradient>
+          <radialGradient id="eyeGlow" cx="50%" cy="40%" r="50%">
+            <stop offset="0%" stopColor="#88ddff" />
+            <stop offset="50%" stopColor="#33aaff" />
+            <stop offset="100%" stopColor="#0066cc" />
+          </radialGradient>
+          <linearGradient id="armGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#dd3344" />
+            <stop offset="100%" stopColor="#991122" />
+          </linearGradient>
+          <linearGradient id="antennaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#ffd166" />
+            <stop offset="100%" stopColor="#d4af37" />
+          </linearGradient>
+        </defs>
+
+        {/* shadow */}
+        <ellipse cx="36" cy="80" rx="22" ry="4" fill="rgba(0,0,0,0.25)" />
+
+        {/* left arm */}
+        <rect x="6" y="38" width="8" height="16" rx="4" fill="url(#armGrad)" stroke="#881122" strokeWidth="0.5" />
+        <circle cx="10" cy="56" r="6" fill="#cc2233" stroke="#881122" strokeWidth="0.5" />
+        <circle cx="10" cy="56" r="2.5" fill="#aa1a2a" />
+
+        {/* right arm */}
+        <rect x="58" y="38" width="8" height="16" rx="4" fill="url(#armGrad)" stroke="#881122" strokeWidth="0.5" />
+        <circle cx="62" cy="56" r="6" fill="#cc2233" stroke="#881122" strokeWidth="0.5" />
+        <circle cx="62" cy="56" r="2.5" fill="#aa1a2a" />
+
+        {/* body */}
+        <rect x="16" y="32" width="40" height="34" rx="12" fill="url(#bodyGlow)" stroke="#881122" strokeWidth="0.8" />
+        {/* body highlight */}
+        <rect x="20" y="34" width="16" height="6" rx="3" fill="rgba(255,255,255,0.18)" />
+
+        {/* chest panel */}
+        <rect x="24" y="44" width="24" height="16" rx="6" fill="url(#chestGlow)" stroke="#b0b4bc" strokeWidth="0.6" />
+        {/* chest detail */}
+        <circle cx="36" cy="51" r="3" fill="#33aaff" opacity="0.6" />
+        <rect x="30" y="55" width="12" height="2" rx="1" fill="#c0c4cc" />
+
+        {/* neck joint */}
+        <rect x="28" y="28" width="16" height="6" rx="3" fill="#889098" stroke="#707880" strokeWidth="0.5" />
+        <rect x="31" y="29" width="10" height="4" rx="2" fill="#a0a8b0" />
+
+        {/* head */}
+        <rect x="14" y="4" width="44" height="28" rx="14" fill="url(#headGlow)" stroke="#991122" strokeWidth="0.8" />
+        {/* head highlight */}
+        <ellipse cx="28" cy="10" rx="14" ry="6" fill="rgba(255,255,255,0.15)" />
+
+        {/* face plate */}
+        <rect x="18" y="8" width="36" height="20" rx="10" fill="#f0f2f5" stroke="#d0d4dc" strokeWidth="0.6" />
+        <rect x="18" y="8" width="36" height="12" rx="10" fill="rgba(255,255,255,0.5)" />
+
+        {/* left eye */}
+        <circle cx="29" cy="17" r="5" fill="url(#eyeGlow)" stroke="#0055aa" strokeWidth="0.5" />
+        <circle cx="28" cy="16" r="2" fill="rgba(255,255,255,0.6)" />
+
+        {/* right eye */}
+        <circle cx="43" cy="17" r="5" fill="url(#eyeGlow)" stroke="#0055aa" strokeWidth="0.5" />
+        <circle cx="42" cy="16" r="2" fill="rgba(255,255,255,0.6)" />
+
+        {/* mouth */}
+        <rect x="31" y="23" width="10" height="3" rx="1.5" fill="#cc2233" opacity="0.7" />
+
+        {/* antenna */}
+        <rect x="33" y="0" width="6" height="6" rx="2" fill="url(#antennaGrad)" stroke="#b8860b" strokeWidth="0.5" />
+        <circle cx="36" cy="0" r="4" fill="#ffd166" stroke="#d4af37" strokeWidth="0.5" />
+        <circle cx="35" cy="-1" r="1.5" fill="rgba(255,255,255,0.5)" />
+
+        {/* feet */}
+        <rect x="20" y="64" width="14" height="8" rx="4" fill="#889098" stroke="#707880" strokeWidth="0.5" />
+        <rect x="38" y="64" width="14" height="8" rx="4" fill="#889098" stroke="#707880" strokeWidth="0.5" />
+        <rect x="22" y="66" width="10" height="4" rx="2" fill="#a0a8b0" />
+        <rect x="40" y="66" width="10" height="4" rx="2" fill="#a0a8b0" />
+      </svg>
+
       <div style={{
-        background: '#cc2233',
-        borderRadius: '30% 30% 20% 20% / 40% 40% 30% 30%',
-        width: 48,
-        height: 52,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.4), inset 0 -4px 0 rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)',
-        position: 'relative',
-      }}>
-        <div style={{
-          width: 22, height: 10,
-          background: '#aa1a2a',
-          borderRadius: '30% 30% 0 0',
-          marginTop: -8,
-          boxShadow: 'inset 0 2px 3px rgba(255,255,255,0.25)',
-        }} />
-        <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
-          <div style={{
-            width: 8, height: 10,
-            background: '#fff',
-            borderRadius: '50%',
-            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)',
-          }} />
-          <div style={{
-            width: 8, height: 10,
-            background: '#fff',
-            borderRadius: '50%',
-            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)',
-          }} />
-        </div>
-        <div style={{
-          width: 12, height: 4,
-          background: '#881122',
-          borderRadius: 4,
-          marginTop: 4,
-          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)',
-        }} />
-      </div>
-      <div style={{
-        background: '#f8e8b0',
+        background: 'linear-gradient(135deg, #f8e8b0, #f0d890)',
         border: '2px solid #d4af37',
-        borderRadius: '0 6px 6px 6px',
-        padding: '5px 10px',
-        fontSize: '0.75rem',
+        borderRadius: '0 8px 8px 8px',
+        padding: '6px 12px',
+        fontSize: '0.8rem',
         fontWeight: 800,
         color: '#1a1025',
         whiteSpace: 'nowrap',
-        boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
-        marginBottom: 8,
+        boxShadow: '0 3px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
+        marginBottom: 14,
         position: 'relative',
       }}>
         <div style={{
-          position: 'absolute', top: -2, left: -2,
+          position: 'absolute', top: -2,
           width: 8, height: 8,
-          background: '#f8e8b0',
+          background: '#f0d890',
           borderLeft: '2px solid #d4af37',
           borderTop: '2px solid #d4af37',
           transform: 'rotate(45deg)',
