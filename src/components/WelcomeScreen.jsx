@@ -60,7 +60,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         }
       `}</style>
       <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-        <img src="/logo.png" alt="logo" style={{ width: 80, height: 80, borderRadius: 8 }} />
+        <img src="/logo.png" alt="logo" style={{ width: 120, height: 120, borderRadius: 12 }} />
         <span style={{ fontSize: '0.65rem', color: '#f6d365', fontWeight: 600, textShadow: '0 0 8px rgba(246,211,101,0.3)', letterSpacing: '0.5px' }}>Descargar (próximamente)</span>
       </div>
       <div className="brand-row">
