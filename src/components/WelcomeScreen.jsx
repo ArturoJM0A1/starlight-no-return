@@ -53,12 +53,32 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           0% { background-position: -200% 0; }
           100% { background-position: 200% 0; }
         }
-        @keyframes shimmerText {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
+         @keyframes shimmerText {
+           0% { background-position: 0% 50%; }
+           50% { background-position: 100% 50%; }
+           100% { background-position: 0% 50%; }
+         }
+         .signature {
+           font-family: 'Segoe UI', 'Arial', sans-serif;
+           font-size: 0.85rem;
+           font-weight: 700;
+           letter-spacing: 0.12em;
+           color: #d4d8e0;
+           background: linear-gradient(135deg, #e8ecf0 0%, #b8bcc4 40%, #d0d4dc 60%, #a8acb4 100%);
+           -webkit-background-clip: text;
+           background-clip: text;
+           -webkit-text-fill-color: transparent;
+           text-shadow:
+             0 1px 0 #8a8e96,
+             0 2px 0 #7a7e86,
+             0 3px 0 #6a6e76,
+             0 4px 0 #5a5e66,
+             0 5px 6px rgba(0,0,0,0.4),
+             0 0 8px rgba(200,204,212,0.15);
+           transform: perspective(400px) rotateX(2deg);
+           user-select: none;
+         }
+       `}</style>
 
       <div className="brand-row">
         <div className="mini-rocket" aria-hidden="true"></div>
@@ -79,7 +99,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
       }}>
         Starlight: No Return
       </h1>
-      <h3>By: Arturo Juárez Monroy</h3>
+      <span className="signature">By: Arturo Juárez Monroy</span>
       <p style={{ marginTop: 2, fontSize: '0.8rem', color: 'rgba(246, 211, 101, 0.8)', textAlign: 'center' }}>
         Juego para computadora (no disponible en celular)
       </p>
