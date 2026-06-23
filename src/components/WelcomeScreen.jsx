@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AuthModal from './AuthModal';
 import TopGlobalModal from './TopGlobalModal';
 import ContactFooter from './ContactFooter';
+import StartMascot from './StartMascot';
 
 const goldBtn = {
   marginTop: 20, padding: '12px 28px', fontSize: '0.95rem', fontWeight: 700,
@@ -154,6 +155,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         </button>
       </div>
       <ContactFooter />
+      <StartMascot variant="welcome" />
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={onAuth} />}
       {showTop && <TopGlobalModal onClose={() => setShowTop(false)} />}
     </section>

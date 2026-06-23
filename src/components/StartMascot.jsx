@@ -19,6 +19,13 @@ export default function StartMascot({ user, variant = 'start' }) {
 
   const name = user ? user.username : null;
   const isGameOver = variant === 'gameover';
+  const isWelcome = variant === 'welcome';
+
+  const msg = isGameOver
+    ? 'upss, F :('
+    : isWelcome
+    ? 'Llega lo más lejos posible y romper tu propio récord'
+    : `Suerte${name ? `, ${name}` : ''}`;
 
   return (
     <div style={{
@@ -31,6 +38,7 @@ export default function StartMascot({ user, variant = 'start' }) {
       gap: 4,
       pointerEvents: 'none',
       userSelect: 'none',
+      maxWidth: isWelcome ? 280 : 'none',
     }}>
       <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
         <defs>
@@ -131,10 +139,11 @@ export default function StartMascot({ user, variant = 'start' }) {
         border: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
         borderRadius: '0 8px 8px 8px',
         padding: '6px 12px',
-        fontSize: '0.8rem',
+        fontSize: isWelcome ? '0.7rem' : '0.8rem',
         fontWeight: 800,
         color: '#1a1025',
-        whiteSpace: 'nowrap',
+        whiteSpace: isWelcome ? 'normal' : 'nowrap',
+        lineHeight: 1.3,
         boxShadow: '0 3px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
         marginBottom: 14,
         position: 'relative',
@@ -148,7 +157,7 @@ export default function StartMascot({ user, variant = 'start' }) {
           transform: 'rotate(45deg)',
           left: 6,
         }} />
-        {isGameOver ? 'upss, F :(' : `Suerte${name ? `, ${name}` : ''}`}
+        {msg}
       </div>
     </div>
   );
