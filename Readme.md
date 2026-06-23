@@ -1,6 +1,6 @@
 # 🌌 Starlight: No Return
 
-![alt text](image.png)
+<img src="image.png" alt="alt text" width="350">
 
 > *"Cada órbita eventualmente se cierra… excepto aquella de la que no hay retorno."*
 
