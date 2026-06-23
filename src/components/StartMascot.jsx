@@ -31,14 +31,14 @@ export default function StartMascot({ user }) {
       <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
         <defs>
           <radialGradient id="bodyGlow" cx="40%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="#ee4455" />
-            <stop offset="60%" stopColor="#cc2233" />
-            <stop offset="100%" stopColor="#991122" />
+            <stop offset="0%" stopColor="#d8dcd0" />
+            <stop offset="60%" stopColor="#c2c8b8" />
+            <stop offset="100%" stopColor="#a8b0a0" />
           </radialGradient>
           <radialGradient id="headGlow" cx="40%" cy="25%" r="65%">
-            <stop offset="0%" stopColor="#ff5566" />
-            <stop offset="50%" stopColor="#dd3344" />
-            <stop offset="100%" stopColor="#aa1a2a" />
+            <stop offset="0%" stopColor="#e4e8dc" />
+            <stop offset="50%" stopColor="#ccd2c4" />
+            <stop offset="100%" stopColor="#b0b8a8" />
           </radialGradient>
           <radialGradient id="chestGlow" cx="50%" cy="30%" r="60%">
             <stop offset="0%" stopColor="#ffffff" />
@@ -51,8 +51,8 @@ export default function StartMascot({ user }) {
             <stop offset="100%" stopColor="#0066cc" />
           </radialGradient>
           <linearGradient id="armGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#dd3344" />
-            <stop offset="100%" stopColor="#991122" />
+            <stop offset="0%" stopColor="#d0d6c8" />
+            <stop offset="100%" stopColor="#a8b0a0" />
           </linearGradient>
           <linearGradient id="antennaGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#ffd166" />
@@ -64,19 +64,19 @@ export default function StartMascot({ user }) {
         <ellipse cx="36" cy="80" rx="22" ry="4" fill="rgba(0,0,0,0.25)" />
 
         {/* left arm */}
-        <rect x="6" y="38" width="8" height="16" rx="4" fill="url(#armGrad)" stroke="#881122" strokeWidth="0.5" />
-        <circle cx="10" cy="56" r="6" fill="#cc2233" stroke="#881122" strokeWidth="0.5" />
-        <circle cx="10" cy="56" r="2.5" fill="#aa1a2a" />
+        <rect x="6" y="38" width="8" height="16" rx="4" fill="url(#armGrad)" stroke="#909888" strokeWidth="0.5" />
+        <circle cx="10" cy="56" r="6" fill="#c2c8b8" stroke="#909888" strokeWidth="0.5" />
+        <circle cx="10" cy="56" r="2.5" fill="#a8b0a0" />
 
         {/* right arm */}
-        <rect x="58" y="38" width="8" height="16" rx="4" fill="url(#armGrad)" stroke="#881122" strokeWidth="0.5" />
-        <circle cx="62" cy="56" r="6" fill="#cc2233" stroke="#881122" strokeWidth="0.5" />
-        <circle cx="62" cy="56" r="2.5" fill="#aa1a2a" />
+        <rect x="58" y="38" width="8" height="16" rx="4" fill="url(#armGrad)" stroke="#909888" strokeWidth="0.5" />
+        <circle cx="62" cy="56" r="6" fill="#c2c8b8" stroke="#909888" strokeWidth="0.5" />
+        <circle cx="62" cy="56" r="2.5" fill="#a8b0a0" />
 
         {/* body */}
-        <rect x="16" y="32" width="40" height="34" rx="12" fill="url(#bodyGlow)" stroke="#881122" strokeWidth="0.8" />
+        <rect x="16" y="32" width="40" height="34" rx="12" fill="url(#bodyGlow)" stroke="#909888" strokeWidth="0.8" />
         {/* body highlight */}
-        <rect x="20" y="34" width="16" height="6" rx="3" fill="rgba(255,255,255,0.18)" />
+        <rect x="20" y="34" width="16" height="6" rx="3" fill="rgba(255,255,255,0.25)" />
 
         {/* chest panel */}
         <rect x="24" y="44" width="24" height="16" rx="6" fill="url(#chestGlow)" stroke="#b0b4bc" strokeWidth="0.6" />
@@ -85,13 +85,13 @@ export default function StartMascot({ user }) {
         <rect x="30" y="55" width="12" height="2" rx="1" fill="#c0c4cc" />
 
         {/* neck joint */}
-        <rect x="28" y="28" width="16" height="6" rx="3" fill="#889098" stroke="#707880" strokeWidth="0.5" />
-        <rect x="31" y="29" width="10" height="4" rx="2" fill="#a0a8b0" />
+        <rect x="28" y="28" width="16" height="6" rx="3" fill="#a0a898" stroke="#889080" strokeWidth="0.5" />
+        <rect x="31" y="29" width="10" height="4" rx="2" fill="#b8c0b0" />
 
         {/* head */}
-        <rect x="14" y="4" width="44" height="28" rx="14" fill="url(#headGlow)" stroke="#991122" strokeWidth="0.8" />
+        <rect x="14" y="4" width="44" height="28" rx="14" fill="url(#headGlow)" stroke="#a0a898" strokeWidth="0.8" />
         {/* head highlight */}
-        <ellipse cx="28" cy="10" rx="14" ry="6" fill="rgba(255,255,255,0.15)" />
+        <ellipse cx="28" cy="10" rx="14" ry="6" fill="rgba(255,255,255,0.2)" />
 
         {/* face plate */}
         <rect x="18" y="8" width="36" height="20" rx="10" fill="#f0f2f5" stroke="#d0d4dc" strokeWidth="0.6" />
@@ -105,8 +105,8 @@ export default function StartMascot({ user }) {
         <circle cx="43" cy="17" r="5" fill="url(#eyeGlow)" stroke="#0055aa" strokeWidth="0.5" />
         <circle cx="42" cy="16" r="2" fill="rgba(255,255,255,0.6)" />
 
-        {/* mouth */}
-        <rect x="31" y="23" width="10" height="3" rx="1.5" fill="#cc2233" opacity="0.7" />
+        {/* smile */}
+        <path d="M31 24 Q36 28 41 24" stroke="#889080" strokeWidth="1.5" strokeLinecap="round" fill="none" />
 
         {/* antenna */}
         <rect x="33" y="0" width="6" height="6" rx="2" fill="url(#antennaGrad)" stroke="#b8860b" strokeWidth="0.5" />
@@ -114,10 +114,10 @@ export default function StartMascot({ user }) {
         <circle cx="35" cy="-1" r="1.5" fill="rgba(255,255,255,0.5)" />
 
         {/* feet */}
-        <rect x="20" y="64" width="14" height="8" rx="4" fill="#889098" stroke="#707880" strokeWidth="0.5" />
-        <rect x="38" y="64" width="14" height="8" rx="4" fill="#889098" stroke="#707880" strokeWidth="0.5" />
-        <rect x="22" y="66" width="10" height="4" rx="2" fill="#a0a8b0" />
-        <rect x="40" y="66" width="10" height="4" rx="2" fill="#a0a8b0" />
+        <rect x="20" y="64" width="14" height="8" rx="4" fill="#a0a898" stroke="#889080" strokeWidth="0.5" />
+        <rect x="38" y="64" width="14" height="8" rx="4" fill="#a0a898" stroke="#889080" strokeWidth="0.5" />
+        <rect x="22" y="66" width="10" height="4" rx="2" fill="#b8c0b0" />
+        <rect x="40" y="66" width="10" height="4" rx="2" fill="#b8c0b0" />
       </svg>
 
       <div style={{
