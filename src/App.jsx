@@ -10,6 +10,7 @@ import PhaseToast from './components/PhaseToast';
 import ComboToast from './components/ComboToast';
 import TouchControls from './components/TouchControls';
 import UserBadge from './components/UserBadge';
+import StartMascot from './components/StartMascot';
 
 export default function App() {
   const [mode, setMode] = useState('welcome');
@@ -115,6 +116,7 @@ export default function App() {
 
       {isPlaying && (
         <>
+          <StartMascot user={user} />
           <UserBadge user={user} />
           <HUD />
           <PhaseToast />
