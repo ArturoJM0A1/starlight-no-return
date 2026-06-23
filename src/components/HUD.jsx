@@ -30,7 +30,7 @@ export default function HUD() {
         <span>🚀 ALIADO</span><strong id="allyTime">0s</strong>
       </div>
       <div id="whirlpoolIndicator" className="hud-panel hidden" style={{ background: 'rgba(78, 231, 213, 0.3)', borderColor: '#4ee7d5' }}>
-        <span>🌀 REMOLINO</span><strong id="wpTime">0s</strong><span style={{fontSize: '0.7rem'}}> restantes</span>
+        <span>🌀 REMOLINO</span><strong id="wpTime">0s</strong><span style={{fontSize: '0.55rem'}}> restantes</span>
       </div>
       <div id="frozenIndicator" className="hud-panel hidden" style={{ background: 'rgba(136, 204, 255, 0.3)', borderColor: '#88ccff' }}>
         <span>❄️ HIELO</span><strong id="iceTime">0s</strong>

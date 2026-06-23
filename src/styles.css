@@ -359,7 +359,7 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 6px;
   transform: translateX(-50%);
   pointer-events: none;
   max-width: 95vw;
@@ -367,8 +367,8 @@ kbd {
 }
 
 .hud-panel {
-  min-width: 88px;
-  padding: 8px 12px;
+  min-width: 70px;
+  padding: 5px 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--glass);
@@ -380,7 +380,7 @@ kbd {
 .hud-panel span {
   display: block;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
@@ -388,8 +388,8 @@ kbd {
 
 .hud-panel strong {
   display: block;
-  margin-top: 4px;
-  font-size: 1.2rem;
+  margin-top: 3px;
+  font-size: 0.9rem;
   line-height: 1;
 }
 
@@ -404,7 +404,7 @@ kbd {
 }
 #invisibleIndicator strong,
 #allyIndicator strong {
-  font-size: 1rem;
+  font-size: 0.8rem;
 }
 
 .top-actions {
@@ -521,11 +521,11 @@ kbd {
     flex-wrap: wrap;
   }
   .hud-panel {
-    min-width: 70px;
-    padding: 6px 8px;
+    min-width: 60px;
+    padding: 4px 6px;
   }
   .hud-panel strong {
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -571,17 +571,17 @@ kbd {
   }
   .hud {
     top: max(8px, env(safe-area-inset-top));
-    gap: 6px;
+    gap: 4px;
   }
   .hud-panel {
-    min-width: 60px;
-    padding: 4px 6px;
+    min-width: 55px;
+    padding: 3px 5px;
   }
   .hud-panel span {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
   }
   .hud-panel strong {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
   .top-actions {
     top: auto;
