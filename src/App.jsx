@@ -12,8 +12,45 @@ import TouchControls from './components/TouchControls';
 import UserBadge from './components/UserBadge';
 import StartMascot from './components/StartMascot';
 
+function isMobile() {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent;
+  const mobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua);
+  const smallScreen = window.innerWidth < 768;
+  return mobileUA || smallScreen;
+}
+
+const mobileBlockStyle = {
+  position: 'fixed', inset: 0, zIndex: 9999,
+  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+  background: 'linear-gradient(135deg, #0f0c29, #1a1145, #0d2137)',
+  color: '#f8fbff', textAlign: 'center', padding: 32,
+};
+
+const mobileBlockTitle = {
+  fontSize: '1.4rem', fontWeight: 700, marginBottom: 16,
+  color: '#f6d365',
+};
+
+const mobileBlockText = {
+  fontSize: '1rem', color: '#b8c4d9', lineHeight: 1.5, maxWidth: 320,
+};
+
 export default function App() {
   const [mode, setMode] = useState('welcome');
+  const [blocked] = useState(isMobile);
+
+  if (blocked) {
+    return (
+      <div style={mobileBlockStyle}>
+        <div style={mobileBlockTitle}>Starlight No Return</div>
+        <div style={mobileBlockText}>
+          Lo sentimos, este juego solo está disponible para PC.<br /><br />
+          Abre el juego desde una computadora para disfrutar la experiencia completa.
+        </div>
+      </div>
+    );
+  }
   const [gameOverStats, setGameOverStats] = useState({ score: 0, best: 0, distance: 0 });
   const [user, setUser] = useState(null);
   const engineRef = useRef(null);

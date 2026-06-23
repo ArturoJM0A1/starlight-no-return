@@ -28,7 +28,7 @@ export default function StartMascot({ user, variant = 'start' }) {
   const msg = isGameOver
     ? 'upss, F :('
     : isWelcome
-    ? 'Llega lo más lejos posible y romper tu propio récord'
+    ? 'Llega lo más lejos posible y rompe tu propio récord'
     : isInstructions
     ? 'Guía de vuelo'
     : `Suerte${name ? `, ${name}` : ''}`;
@@ -48,37 +48,54 @@ export default function StartMascot({ user, variant = 'start' }) {
       userSelect: 'none',
       maxWidth: isWelcome ? 280 : 'none',
     }}>
-      <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
-        <defs>
-          <radialGradient id="bodyGlow" cx="40%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="#88d0cc" />
-            <stop offset="60%" stopColor="#60b8b0" />
-            <stop offset="100%" stopColor="#40a098" />
-          </radialGradient>
-          <radialGradient id="headGlow" cx="40%" cy="25%" r="65%">
-            <stop offset="0%" stopColor="#94dcd8" />
-            <stop offset="50%" stopColor="#6cc4be" />
-            <stop offset="100%" stopColor="#4caca4" />
-          </radialGradient>
-          <radialGradient id="chestGlow" cx="50%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="50%" stopColor="#f0f2f5" />
-            <stop offset="100%" stopColor="#d0d4dc" />
-          </radialGradient>
-          <radialGradient id="eyeGlow" cx="50%" cy="40%" r="50%">
-            <stop offset="0%" stopColor="#88ddff" />
-            <stop offset="50%" stopColor="#33aaff" />
-            <stop offset="100%" stopColor="#0066cc" />
-          </radialGradient>
-          <linearGradient id="armGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#78ccc6" />
-            <stop offset="100%" stopColor="#40a098" />
-          </linearGradient>
-          <linearGradient id="antennaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ffd166" />
-            <stop offset="100%" stopColor="#d4af37" />
-          </linearGradient>
-        </defs>
+      {isInstructions ? (
+        <>
+          <Bubble {...{ isGameOver, isInstructions, isWelcome, msg }} />
+          <SvgRobot />
+        </>
+      ) : (
+        <>
+          <SvgRobot />
+          <Bubble {...{ isGameOver, isInstructions, isWelcome, msg }} />
+        </>
+      )}
+    </div>
+  );
+}
+
+function SvgRobot() {
+  return (
+    <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
+      <defs>
+        <radialGradient id="bodyGlow" cx="40%" cy="30%" r="60%">
+          <stop offset="0%" stopColor="#88d0cc" />
+          <stop offset="60%" stopColor="#60b8b0" />
+          <stop offset="100%" stopColor="#40a098" />
+        </radialGradient>
+        <radialGradient id="headGlow" cx="40%" cy="25%" r="65%">
+          <stop offset="0%" stopColor="#94dcd8" />
+          <stop offset="50%" stopColor="#6cc4be" />
+          <stop offset="100%" stopColor="#4caca4" />
+        </radialGradient>
+        <radialGradient id="chestGlow" cx="50%" cy="30%" r="60%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="50%" stopColor="#f0f2f5" />
+          <stop offset="100%" stopColor="#d0d4dc" />
+        </radialGradient>
+        <radialGradient id="eyeGlow" cx="50%" cy="40%" r="50%">
+          <stop offset="0%" stopColor="#88ddff" />
+          <stop offset="50%" stopColor="#33aaff" />
+          <stop offset="100%" stopColor="#0066cc" />
+        </radialGradient>
+        <linearGradient id="armGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#78ccc6" />
+          <stop offset="100%" stopColor="#40a098" />
+        </linearGradient>
+        <linearGradient id="antennaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffd166" />
+          <stop offset="100%" stopColor="#d4af37" />
+        </linearGradient>
+      </defs>
 
         {/* shadow */}
         <ellipse cx="36" cy="80" rx="22" ry="4" fill="rgba(0,0,0,0.25)" />
@@ -139,37 +156,40 @@ export default function StartMascot({ user, variant = 'start' }) {
         <rect x="22" y="66" width="10" height="4" rx="2" fill="#6cc4be" />
         <rect x="40" y="66" width="10" height="4" rx="2" fill="#6cc4be" />
       </svg>
+    );
+}
 
+function Bubble({ isGameOver, isInstructions, isWelcome, msg }) {
+  return (
+    <div style={{
+      background: isGameOver
+        ? 'linear-gradient(135deg, #f0d0d0, #e8b8b8)'
+        : 'linear-gradient(135deg, #f8e8b0, #f0d890)',
+      border: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
+      borderRadius: isInstructions ? '8px 8px 8px 0' : '0 8px 8px 8px',
+      padding: '6px 12px',
+      fontSize: isWelcome ? '0.7rem' : '0.8rem',
+      fontWeight: 800,
+      color: '#1a1025',
+      whiteSpace: isWelcome ? 'normal' : 'nowrap',
+      lineHeight: 1.3,
+      boxShadow: '0 3px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
+      marginBottom: isInstructions ? 0 : 14,
+      marginTop: isInstructions ? 4 : 0,
+      position: 'relative',
+    }}>
       <div style={{
-        background: isGameOver
-          ? 'linear-gradient(135deg, #f0d0d0, #e8b8b8)'
-          : 'linear-gradient(135deg, #f8e8b0, #f0d890)',
-        border: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
-        borderRadius: isInstructions ? '8px 8px 8px 0' : '0 8px 8px 8px',
-        padding: '6px 12px',
-        fontSize: isWelcome ? '0.7rem' : '0.8rem',
-        fontWeight: 800,
-        color: '#1a1025',
-        whiteSpace: isWelcome ? 'normal' : 'nowrap',
-        lineHeight: 1.3,
-        boxShadow: '0 3px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
-        marginBottom: isInstructions ? 0 : 14,
-        marginTop: isInstructions ? 4 : 0,
-        position: 'relative',
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: isInstructions ? 'auto' : -2,
-          bottom: isInstructions ? -2 : 'auto',
-          width: 8, height: 8,
-          background: isGameOver ? '#e8b8b8' : '#f0d890',
-          borderLeft: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
-          borderTop: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
-          transform: isInstructions ? 'rotate(-135deg)' : 'rotate(45deg)',
-          left: 10,
-        }} />
-        {msg}
-      </div>
+        position: 'absolute',
+        top: isInstructions ? 'auto' : -2,
+        bottom: isInstructions ? -2 : 'auto',
+        width: 8, height: 8,
+        background: isGameOver ? '#e8b8b8' : '#f0d890',
+        borderLeft: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
+        borderTop: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
+        transform: isInstructions ? 'rotate(-135deg)' : 'rotate(45deg)',
+        left: 10,
+      }} />
+      {msg}
     </div>
   );
 }

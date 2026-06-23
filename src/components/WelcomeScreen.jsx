@@ -157,7 +157,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
       <ContactFooter />
       <StartMascot variant="welcome" />
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={onAuth} />}
-      {showTop && <TopGlobalModal onClose={() => setShowTop(false)} />}
+      {showTop && <TopGlobalModal user={user} onClose={() => setShowTop(false)} />}
     </section>
   );
 }

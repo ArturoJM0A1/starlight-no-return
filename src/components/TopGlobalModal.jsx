@@ -33,10 +33,10 @@ const list = {
   listStyle: 'none', padding: 0, margin: 0,
 };
 
-const row = (i) => ({
+const row = (i, isMe) => ({
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
   padding: '8px 12px',
-  background: i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'transparent',
+  background: isMe ? '#0a2d5c' : (i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'transparent'),
   borderRadius: 6, marginBottom: 2,
 });
 
@@ -79,7 +79,7 @@ const champMsg = {
   marginTop: 12, lineHeight: 1.3, fontWeight: 600,
 };
 
-export default function TopGlobalModal({ onClose }) {
+export default function TopGlobalModal({ user, onClose }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -129,7 +129,7 @@ export default function TopGlobalModal({ onClose }) {
             <div style={listWrap} className="list-wrap">
               <ul style={list}>
                 {players.map((p, i) => (
-                  <li key={p.uid} style={row(i)}>
+                  <li key={p.uid} style={row(i, user && p.username === user.username)}>
                     <span style={rank}>#{i + 1}</span>
                     <span style={nameCell}>{p.username}</span>
                     <span style={scoreCell}>{p.bestScore.toLocaleString('es-MX')}</span>
