@@ -10,9 +10,9 @@ export default function StartMascot({ user, variant = 'start' }) {
     if (variant === 'start') {
       if (startShown) return;
       startShown = true;
+      const timer = setTimeout(() => setVisible(false), 3000);
+      return () => clearTimeout(timer);
     }
-    const timer = setTimeout(() => setVisible(false), 3000);
-    return () => clearTimeout(timer);
   }, [variant]);
 
   if (!visible) return null;
