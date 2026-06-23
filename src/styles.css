@@ -134,6 +134,7 @@ button {
 
 .screen-welcome {
   justify-content: center;
+  overflow: hidden;
 }
 
 .screen-instructions {
@@ -145,15 +146,15 @@ button {
 .brand-row {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: fit-content;
   margin-bottom: 12px;
-  padding: 8px 12px;
+  padding: 5px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--aqua);
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -277,12 +278,12 @@ kbd {
 /* Footer de contacto */
 .contact-footer {
   margin-top: 12px;
-  padding: 12px 0;
+  padding: 8px 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
-  font-size: 0.85rem;
+  gap: 10px;
+  font-size: 0.75rem;
   width: 100%;
 }
 .contact-footer a {
@@ -291,7 +292,7 @@ kbd {
   transition: all 0.2s;
   font-weight: 500;
   background: rgba(0, 0, 0, 0.3);
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: 40px;
   backdrop-filter: blur(4px);
 }

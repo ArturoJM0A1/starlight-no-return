@@ -66,9 +66,9 @@ const toggleLink = {
 };
 
 const closeBtn = {
-  position: 'absolute', top: 12, right: 16,
+  position: 'absolute', top: 10, right: 14,
   background: 'none', border: 0, color: '#ff6b6b',
-  fontSize: '1.8rem', cursor: 'pointer', lineHeight: 1,
+  fontSize: '2.4rem', cursor: 'pointer', lineHeight: 1,
 };
 
 export default function AuthModal({ onClose, onAuth }) {

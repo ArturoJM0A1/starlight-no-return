@@ -118,7 +118,7 @@ export default function InstructionsScreen({ onBack, engine }) {
           Jugar
         </button>
       </div>
-      <img src="/logo.png" alt="logo" style={{ display: 'block', margin: '16px auto', width: 180, borderRadius: 12 }} />
+      <img src="/logo.png" alt="logo" onClick={() => { if (engine.current) engine.current.startGame(); }} style={{ display: 'block', margin: '16px auto', width: 180, borderRadius: 12, cursor: 'pointer', border: '3px solid #d4af37', boxShadow: '0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.3)' }} />
       <ContactFooter />
     </section>
   );
