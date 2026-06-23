@@ -61,20 +61,29 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
          .signature {
            font-family: 'Segoe UI', 'Arial', sans-serif;
            font-size: 1rem;
-           font-weight: 700;
+           font-weight: 800;
            letter-spacing: 0.12em;
-           color: #ffffff;
-           background: linear-gradient(135deg, #ffffff 0%, #ffffff 50%, #f5f7fa 100%);
+           background: linear-gradient(
+             180deg,
+             #ffffff 0%,
+             #ffffff 25%,
+             #eef0f4 40%,
+             #d8dce4 55%,
+             #f8faff 70%,
+             #ffffff 100%
+           );
            -webkit-background-clip: text;
            background-clip: text;
            -webkit-text-fill-color: transparent;
            text-shadow:
-             0 1px 0 #8a8e96,
-             0 2px 0 #7a7e86,
-             0 3px 0 #6a6e76,
-             0 4px 0 #5a5e66,
-             0 5px 6px rgba(0,0,0,0.4),
-             0 0 8px rgba(200,204,212,0.15);
+             0 1px 0 rgba(255,255,255,0.9),
+             0 2px 0 #c0c4cc,
+             0 3px 1px #b0b4bc,
+             0 4px 2px #a0a4ac,
+             0 5px 3px #90949c,
+             0 6px 4px rgba(80,84,92,0.5),
+             0 8px 8px rgba(0,0,0,0.25),
+             0 0 12px rgba(255,255,255,0.3);
            user-select: none;
          }
        `}</style>
