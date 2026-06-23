@@ -59,6 +59,10 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           100% { background-position: 0% 50%; }
         }
       `}</style>
+      <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+        <img src="/logo.png" alt="logo" style={{ width: 48, height: 48, borderRadius: 8 }} />
+        <span style={{ fontSize: '0.65rem', color: '#f6d365', fontWeight: 600, textShadow: '0 0 8px rgba(246,211,101,0.3)', letterSpacing: '0.5px' }}>Descargar (próximamente)</span>
+      </div>
       <div className="brand-row">
         <div className="mini-rocket" aria-hidden="true"></div>
         <span>Bienvenido, piloto</span>
