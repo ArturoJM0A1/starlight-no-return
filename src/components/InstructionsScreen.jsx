@@ -118,6 +118,7 @@ export default function InstructionsScreen({ onBack, engine }) {
           Iniciar viaje
         </button>
       </div>
+      <img src="/logo.png" alt="logo" style={{ display: 'block', margin: '16px auto', width: 80, borderRadius: 12 }} />
       <ContactFooter />
     </section>
   );

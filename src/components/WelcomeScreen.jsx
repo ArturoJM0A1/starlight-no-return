@@ -59,10 +59,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           100% { background-position: 0% 50%; }
         }
       `}</style>
-      <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-        <img src="/logo.png" alt="logo" style={{ width: 120, borderRadius: 20 }} />
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="#f6d365" style={{ filter: 'drop-shadow(0 0 6px rgba(246,211,101,0.5))' }}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-      </div>
+
       <div className="brand-row">
         <div className="mini-rocket" aria-hidden="true"></div>
         <span>Bienvenido, piloto</span>
