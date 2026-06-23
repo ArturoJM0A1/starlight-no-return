@@ -29,7 +29,7 @@ export default function StartMascot({ user, variant = 'start' }) {
 
   return (
     <div style={{
-      position: 'absolute',
+      position: 'fixed',
       left: 12,
       bottom: 12,
       zIndex: 20,
