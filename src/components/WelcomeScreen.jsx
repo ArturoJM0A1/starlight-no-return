@@ -85,7 +85,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
       </p>
       <div className="welcome-actions">
         <button id="nextButton" className="primary-button bounce-btn" onClick={onNext}>
-          Continuar
+          Iniciar viaje
         </button>
         <button
           id="muteButtonIntro"

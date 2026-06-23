@@ -115,10 +115,10 @@ export default function InstructionsScreen({ onBack, engine }) {
           className="primary-button"
           onClick={() => { if (engine.current) engine.current.startGame(); }}
         >
-          Iniciar viaje
+          Jugar
         </button>
       </div>
-      <img src="/logo.png" alt="logo" style={{ display: 'block', margin: '16px auto', width: 80, borderRadius: 12 }} />
+      <img src="/logo.png" alt="logo" style={{ display: 'block', margin: '16px auto', width: 180, borderRadius: 12 }} />
       <ContactFooter />
     </section>
   );
