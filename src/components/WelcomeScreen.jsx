@@ -65,25 +65,25 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
            letter-spacing: 0.12em;
            background: linear-gradient(
              180deg,
-             #ffffff 0%,
-             #ffffff 25%,
-             #eef0f4 40%,
-             #d8dce4 55%,
-             #f8faff 70%,
-             #ffffff 100%
+             #e8ecf2 0%,
+             #f0f4fa 20%,
+             #d0d6e0 40%,
+             #b8c0cc 55%,
+             #dce2ec 75%,
+             #e4e8f0 100%
            );
            -webkit-background-clip: text;
            background-clip: text;
            -webkit-text-fill-color: transparent;
            text-shadow:
-             0 1px 0 rgba(255,255,255,0.9),
-             0 2px 0 #c0c4cc,
-             0 3px 1px #b0b4bc,
-             0 4px 2px #a0a4ac,
-             0 5px 3px #90949c,
-             0 6px 4px rgba(80,84,92,0.5),
+             0 1px 0 rgba(255,255,255,0.6),
+             0 2px 0 #a8aeb8,
+             0 3px 1px #989ea8,
+             0 4px 2px #888e98,
+             0 5px 3px #787e88,
+             0 6px 4px rgba(60,64,72,0.5),
              0 8px 8px rgba(0,0,0,0.25),
-             0 0 12px rgba(255,255,255,0.3);
+             0 0 10px rgba(200,208,220,0.25);
            user-select: none;
          }
        `}</style>
