@@ -63,8 +63,8 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
            font-size: 0.85rem;
            font-weight: 700;
            letter-spacing: 0.12em;
-           color: #d4d8e0;
-           background: linear-gradient(135deg, #e8ecf0 0%, #b8bcc4 40%, #d0d4dc 60%, #a8acb4 100%);
+           color: #f0f2f5;
+           background: linear-gradient(135deg, #ffffff 0%, #e0e4e8 40%, #f5f7fa 60%, #d0d4dc 100%);
            -webkit-background-clip: text;
            background-clip: text;
            -webkit-text-fill-color: transparent;
