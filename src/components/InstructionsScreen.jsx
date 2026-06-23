@@ -1,5 +1,6 @@
 import React from 'react';
 import ContactFooter from './ContactFooter';
+import StartMascot from './StartMascot';
 
 const s = (d) => ({ __html: `<svg viewBox="0 0 20 20" width="20" height="20" style="flex-shrink:0">${d}</svg>` });
 
@@ -28,7 +29,7 @@ export default function InstructionsScreen({ onBack, engine }) {
       </div>
       <h2>Instrucciones</h2>
       <p className="lead">
-        Sobrevive el mayor tiempo posible. Esquiva, dispara y recoge mejoras. Cada fase es más letal.
+        Esquiva, dispara y recoge proyectiles
       </p>
 
       <div className="instruction-grid" aria-label="Mecánicas del juego">
@@ -119,6 +120,7 @@ export default function InstructionsScreen({ onBack, engine }) {
         </button>
       </div>
       <img src="/logo.png" alt="logo" onClick={() => { if (engine.current) engine.current.startGame(); }} style={{ display: 'block', margin: '16px auto', width: 180, borderRadius: 12, cursor: 'pointer', border: '3px solid #d4af37', boxShadow: '0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.3)' }} />
+      <StartMascot variant="instructions" />
       <ContactFooter />
     </section>
   );

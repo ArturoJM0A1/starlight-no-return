@@ -20,21 +20,26 @@ export default function StartMascot({ user, variant = 'start' }) {
   const name = user ? user.username : null;
   const isGameOver = variant === 'gameover';
   const isWelcome = variant === 'welcome';
+  const isInstructions = variant === 'instructions';
 
   const msg = isGameOver
     ? 'upss, F :('
     : isWelcome
     ? 'Llega lo más lejos posible y romper tu propio récord'
+    : isInstructions
+    ? 'Guía de vuelo'
     : `Suerte${name ? `, ${name}` : ''}`;
 
   return (
     <div style={{
       position: 'fixed',
       left: 12,
-      bottom: 12,
+      bottom: isInstructions ? 'auto' : 12,
+      top: isInstructions ? 12 : 'auto',
       zIndex: 20,
       display: 'flex',
-      alignItems: 'flex-end',
+      flexDirection: isInstructions ? 'column' : 'row',
+      alignItems: 'flex-start',
       gap: 4,
       pointerEvents: 'none',
       userSelect: 'none',
@@ -137,7 +142,7 @@ export default function StartMascot({ user, variant = 'start' }) {
           ? 'linear-gradient(135deg, #f0d0d0, #e8b8b8)'
           : 'linear-gradient(135deg, #f8e8b0, #f0d890)',
         border: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
-        borderRadius: '0 8px 8px 8px',
+        borderRadius: isInstructions ? '8px 8px 8px 0' : '0 8px 8px 8px',
         padding: '6px 12px',
         fontSize: isWelcome ? '0.7rem' : '0.8rem',
         fontWeight: 800,
@@ -145,17 +150,20 @@ export default function StartMascot({ user, variant = 'start' }) {
         whiteSpace: isWelcome ? 'normal' : 'nowrap',
         lineHeight: 1.3,
         boxShadow: '0 3px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
-        marginBottom: 14,
+        marginBottom: isInstructions ? 0 : 14,
+        marginTop: isInstructions ? 4 : 0,
         position: 'relative',
       }}>
         <div style={{
-          position: 'absolute', top: -2,
+          position: 'absolute',
+          top: isInstructions ? 'auto' : -2,
+          bottom: isInstructions ? -2 : 'auto',
           width: 8, height: 8,
           background: isGameOver ? '#e8b8b8' : '#f0d890',
           borderLeft: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
           borderTop: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
-          transform: 'rotate(45deg)',
-          left: 6,
+          transform: isInstructions ? 'rotate(-135deg)' : 'rotate(45deg)',
+          left: 10,
         }} />
         {msg}
       </div>
