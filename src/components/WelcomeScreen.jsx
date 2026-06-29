@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { logoutUser } from '../firebase';
 import AuthModal from './AuthModal';
 import TopGlobalModal from './TopGlobalModal';
 import ContactFooter from './ContactFooter';
@@ -89,6 +90,23 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
          }
        `}</style>
 
+      {/* Botón cerrar sesión: solo visible si hay usuario logueado */}
+      {user && (
+        <button
+          onClick={async () => { try { await logoutUser(); window.location.reload(); } catch (_) {} }}
+          style={{
+            position: 'absolute', top: 8, right: 8, zIndex: 10,
+            padding: '3px 10px', fontSize: '0.7rem', fontWeight: 600,
+            background: 'rgba(200, 50, 50, 0.75)',
+            border: '1px solid rgba(255, 100, 100, 0.4)',
+            borderRadius: 6, color: '#f0d0d0', cursor: 'pointer',
+            lineHeight: 1.4,
+          }}
+          title="Cerrar sesión"
+        >
+          Cerrar sesión
+        </button>
+      )}
       <div className="brand-row">
         <div className="mini-rocket" aria-hidden="true"></div>
         <span>Bienvenido, piloto</span>
