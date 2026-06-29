@@ -97,9 +97,9 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           style={{
             position: 'absolute', top: 8, right: 8, zIndex: 10,
             padding: '3px 10px', fontSize: '0.7rem', fontWeight: 600,
-            background: 'rgba(200, 50, 50, 0.75)',
-            border: '1px solid rgba(255, 100, 100, 0.4)',
-            borderRadius: 6, color: '#f0d0d0', cursor: 'pointer',
+            background: 'rgba(210, 90, 50, 0.8)',
+            border: '1px solid rgba(255, 140, 80, 0.4)',
+            borderRadius: 6, color: '#fce8d8', cursor: 'pointer',
             lineHeight: 1.4,
           }}
           title="Cerrar sesión"
