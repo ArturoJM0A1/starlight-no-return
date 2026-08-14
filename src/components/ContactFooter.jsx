@@ -31,7 +31,6 @@ export default function ContactFooter() {
           {l.svg}
         </a>
       ))}
-      <span style={{ display: 'block', marginTop: 8, fontSize: '0.75rem', opacity: 0.6 }}>Arturo Juárez Monroy</span>
     </footer>
   );
 }

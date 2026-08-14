@@ -1,7 +1,5 @@
 # 🌌 Starlight: No Return
 
-<img src="image.png" alt="alt text" width="350">
-
 > *"Cada órbita eventualmente se cierra… excepto aquella de la que no hay retorno."*
 
 **Starlight: No Return** es un frenético juego arcade espacial donde cada segundo cuenta. Pilota un cohete metamórfico a través de un universo hostil, esquiva anomalías cósmicas, administra tus recursos y sobrevive el mayor tiempo posible antes de alcanzar el punto de no retorno.
