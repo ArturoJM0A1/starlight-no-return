@@ -12,7 +12,7 @@
 
 ## 🚀 Sobre el juego
 
-Juego arcade construido con **React 18**, **HTML5 Canvas** y **Vite 6**. El motor de juego mantiene la esencia de los clásicos arcade con un bucle de renderizado imperativo sobre canvas, mientras que la interfaz se maneja con componentes React. Incluye **Firebase Auth** para registro de usuarios y **Firestore** para persistencia de puntuaciones y tabla de líderes global.
+Juego arcade construido con **React 18**, **HTML5 Canvas** y **Vite**. El motor de juego mantiene la esencia de los clásicos arcade con un bucle de renderizado imperativo sobre canvas, mientras que la interfaz se maneja con componentes React. Incluye **Firebase Auth** para registro de usuarios y **Firestore** para persistencia de puntuaciones y tabla de líderes global.
 
 ---
 
