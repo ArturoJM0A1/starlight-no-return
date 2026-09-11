@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Array declarativo de los enlaces de contacto del desarrollador.
+// Cada objeto contiene la URL, un título (tooltip/accessibilidad) y el SVG
+// inline como elemento JSX reutilizable.
 const links = [
   {
     href: 'https://github.com/ArturoJM0A1',
@@ -26,6 +29,10 @@ const links = [
 export default function ContactFooter() {
   return (
     <footer className="contact-footer">
+      {/* .map() recorre `links` y por cada objeto renderiza un <a>; React usa
+          `key` (aquí el título) para identificar cada elemento al re-renderizar.
+          target="_blank" abre en pestaña nueva; rel="noopener noreferrer"
+          impide que la página nueva acceda a window.opener (seguridad). */}
       {links.map((l) => (
         <a key={l.title} href={l.href} target="_blank" rel="noopener noreferrer" title={l.title}>
           {l.svg}

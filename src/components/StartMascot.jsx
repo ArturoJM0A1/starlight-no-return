@@ -2,12 +2,28 @@ import React, { useEffect, useState } from 'react';
 
 // Variable a nivel de módulo: la variante start aparece solo una vez por sesión.
 // Las variantes gameover/welcome/instructions no tienen esa restricción.
+// Al vivir fuera del componente, persiste mientras la página no se recargue,
+// aun cuando este componente se monte/desmonte varias veces.
 let startShown = false;
 
 export default function StartMascot({ user, variant = 'start' }) {
+  // `oneTime`: para la variante 'start', visible solo la primera vez de la sesión
+  // (módulo); para las demás, siempre visible.
   const oneTime = variant === 'start' ? !startShown : true;
+  /*
+    useState(initialValue): `visible` inicia según oneTime (la variante start se
+    oculta automáticamente si ya se mostró). setVisible controla el renderizado
+    condicional (return null si no visible).
+  */
   const [visible, setVisible] = useState(oneTime);
 
+  /*
+    useEffect con dependencia [variant]: corre después de cada render en el que
+    `variant` cambie. Para 'start' programa un setTimeout de 3s que oculta el
+    mensaje de bienvenida. La función de retorno (limpieza) cancela ese timeout
+    si el componente se desmonta antes, evitando setState sobre un componente
+    desmontado.
+  */
   useEffect(() => {
     if (variant === 'start') {
       if (startShown) return;
@@ -17,14 +33,19 @@ export default function StartMascot({ user, variant = 'start' }) {
     }
   }, [variant]);
 
+  // Render condicional temprano: sin visibilidad, React no dibuja nada.
   if (!visible) return null;
 
+  // Prop `user` es opcional; si no hay sesión, name es null.
   const name = user ? user.username : null;
   // Posición según variante: instructions → arriba‑izquierda; todas las demás → abajo‑izquierda
   const isGameOver = variant === 'gameover';
   const isWelcome = variant === 'welcome';
   const isInstructions = variant === 'instructions';
 
+  // Cadena de ternarios que elige el mensaje según la variante.
+  // Template literal: `Suerte${name ? `, ${name}` : ''}` interpola el nombre
+  // dentro del texto (concatenación: "Suerte, @foo" o "Suerte").
   const msg = isGameOver
     ? 'upss, F :('
     : isWelcome
@@ -44,10 +65,12 @@ export default function StartMascot({ user, variant = 'start' }) {
       flexDirection: isInstructions ? 'column' : 'row',
       alignItems: 'flex-start',
       gap: 4,
+      /* Sin interacción: el ratón atraviesa este contenedor (no roba clics al canvas). */
       pointerEvents: 'none',
       userSelect: 'none',
       maxWidth: isWelcome ? 280 : 'none',
     }}>
+      {/* En instructions el robot va debajo del globo; en el resto, arriba. */}
       {isInstructions ? (
         <>
           <Bubble {...{ isGameOver, isInstructions, isWelcome, msg }} />
@@ -63,6 +86,9 @@ export default function StartMascot({ user, variant = 'start' }) {
   );
 }
 
+// Definición del robot como imagen vectorial (SVG). Cada <stop> de los
+// gradientes define colores interpolados; las formas (rect, circle, path)
+// se dibujan en coordenadas del viewBox 72x84 y NO dependen de React.
 function SvgRobot() {
   return (
     <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
@@ -159,6 +185,9 @@ function SvgRobot() {
     );
 }
 
+// Globo de diálogo: estilos condicionados por variante (colores de derrota
+// vs. normal; el "pico" del globo se dibuja con un cuadrado giratorio #45deg).
+// pointer-events:'none' asegura que tampoco bloquee el juego.
 function Bubble({ isGameOver, isInstructions, isWelcome, msg }) {
   return (
     <div style={{
@@ -166,6 +195,7 @@ function Bubble({ isGameOver, isInstructions, isWelcome, msg }) {
         ? 'linear-gradient(135deg, #f0d0d0, #e8b8b8)'
         : 'linear-gradient(135deg, #f8e8b0, #f0d890)',
       border: `2px solid ${isGameOver ? '#cc6666' : '#d4af37'}`,
+      // border-radius con esquina rota: el pico coincide con la esquina cuadrada.
       borderRadius: isInstructions ? '8px 8px 8px 0' : '0 8px 8px 8px',
       padding: '6px 12px',
       fontSize: isWelcome ? '0.7rem' : '0.8rem',
@@ -178,6 +208,7 @@ function Bubble({ isGameOver, isInstructions, isWelcome, msg }) {
       marginTop: isInstructions ? 4 : 0,
       position: 'relative',
     }}>
+      {/* Pico del globo: cuadrado posicionado, rotado 45° (o -135° en instructions). */}
       <div style={{
         position: 'absolute',
         top: isInstructions ? 'auto' : -2,

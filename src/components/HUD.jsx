@@ -1,5 +1,19 @@
 import React from 'react';
 
+/*
+  HUD (Heads-Up Display): capa de interfaz sobre el lienzo del juego.
+  Este componente es un TIPO DE "contenedor tonto": todos sus elementos llevan
+  id con los que el motor (engine.js) los localiza con getElementById y actualiza
+  su contenido/visibilidad directamente por DOM — React no interviene en esas
+  escrituras, por lo que el HUD no se re-renderiza con cada frame.
+
+  aria-live="polite": un lector de pantalla anuncia los cambios de contenido
+  sin interrumpir la lectura (accesibilidad).
+
+  La clase `hidden` (definida en styles.css) los oculta vía display:none.
+  Los paneles de power-ups inician ocultos y el motor los muestra sólo cuando
+  el efecto está activo (textContent/.classList mutate directo).
+*/
 export default function HUD() {
   return (
     <div id="hud" className="hud" aria-live="polite">
@@ -23,6 +37,7 @@ export default function HUD() {
         <span>Vidas</span>
         <strong id="healthValue">6</strong>
       </div>
+      {/* Paneles dinámicos: el engine.js busca estos ids y alterna la clase hidden. */}
       <div id="invisibleIndicator" className="hud-panel hidden" style={{ background: 'rgba(255, 215, 0, 0.3)', borderColor: '#ffd166' }}>
         <span>✨ INVISIBLE</span><strong id="invisTime">0s</strong>
       </div>

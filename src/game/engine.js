@@ -134,14 +134,17 @@ export function initGame(canvas, options = {}) {
     arrowRain: 5,
   };
 
+  // Número aleatorio uniforme en el intervalo [min, max].
   function rand(min, max) {
     return min + Math.random() * (max - min);
   }
 
+  // Limita un valor al intervalo [min, max].
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
   }
 
+  // Distancia euclidiana entre dos puntos {x, y}.
   function dist(a, b) {
     return Math.hypot(a.x - b.x, a.y - b.y);
   }
@@ -153,10 +156,13 @@ export function initGame(canvas, options = {}) {
     return { x: x / len, y: y / len };
   }
 
+  // Devuelve el objeto de fase vigente (cicla entre las 4 fases definidas).
   function currentPhase() {
     return PHASES[state.phaseIndex % PHASES.length];
   }
 
+  // Ajusta el canvas al tamaño de la ventana con devicePixelRatio (nítido en
+  // HiDPI). Reubica al jugador dentro de los márgenes si quedó fuera tras el resize.
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     width = window.innerWidth;
@@ -172,6 +178,7 @@ export function initGame(canvas, options = {}) {
     player.y = clamp(player.y || height / 2, 78, height - 64);
   }
 
+  // Crea la capa de estrellas de fondo (cantidad proporcional al área visible).
   function buildStars() {
     state.stars = [];
     const total = Math.round(clamp((width * height) / 8200, 64, 180));
@@ -275,6 +282,8 @@ export function initGame(canvas, options = {}) {
     sfx("start");
   }
 
+  // Vuelve a la pantalla de bienvenida: detiene la música, oculta el HUD y
+  // avisa a React del cambio de modo (onModeChange).
   function returnHome() {
     state.mode = "welcome";
     state.paused = false;
@@ -287,6 +296,8 @@ export function initGame(canvas, options = {}) {
     if (shell) shell.classList.remove("paused");
   }
 
+  // Fin de partida: congela el mundo, guarda la mejor puntuación en localStorage,
+  // oculta el HUD y llama a onModeChange('gameover', stats) para React.
   function showGameOver() {
     state.mode = "gameover";
     state.paused = false;
@@ -306,6 +317,7 @@ export function initGame(canvas, options = {}) {
     sfx("fail");
   }
 
+  // Pausa/reanuda la partida en curso; alterna la clase "paused" del shell (DOM).
   function togglePause() {
     if (state.mode !== "playing") return;
     state.paused = !state.paused;
@@ -313,6 +325,7 @@ export function initGame(canvas, options = {}) {
     sfx("click");
   }
 
+  // Silencia los SFX y sincroniza el botón de sonido (aria-pressed + texto).
   function toggleMute() {
     muted = !muted;
     const muteButtonIntro = $("muteButtonIntro");
@@ -441,6 +454,7 @@ export function initGame(canvas, options = {}) {
     master.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
   }
 
+  // Vibración háptica del dispositivo (no soportada en todos los navegadores/desktop).
   function vibrate(pattern) {
     if (navigator.vibrate) navigator.vibrate(pattern);
   }
@@ -518,6 +532,8 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Muestra el mensaje de fase durante 1.9s. Guarda el timeout en la propia
+  // función (showPhaseToast.timer) para cancelar el toast anterior al llegar uno nuevo.
   function showPhaseToast(message) {
     const phaseToast = $("phaseToast");
     if (!phaseToast) return;
@@ -527,6 +543,7 @@ export function initGame(canvas, options = {}) {
     showPhaseToast.timer = setTimeout(() => phaseToast.classList.add("hidden"), 1900);
   }
 
+  // Toast breve (900ms) para cadenas/near-misses, con el mismo truco de timer único.
   function showComboToast(message) {
     const comboToast = $("comboToast");
     if (!comboToast) return;
@@ -536,14 +553,19 @@ export function initGame(canvas, options = {}) {
     showComboToast.timer = setTimeout(() => comboToast.classList.add("hidden"), 900);
   }
 
+  // Texto flotante de feedback (+puntos, avisos de power-up). Se anima subiendo
+  // y desvaneciéndose dentro de updateEffects.
   function addFloating(text, x, y, color = "#f8fbff") {
     state.floating.push({ text, x, y, color, life: 1, max: 1 });
   }
 
+  // Onda expansiva circular; su radio/alpha se calculan en drawRipples.
   function addRipple(x, y, color, radius, widthLine = 3) {
     state.ripples.push({ x, y, color, radius, widthLine, life: 0.55, max: 0.55 });
   }
 
+  // Crea `count` partículas con dirección aleatoria y velocidad entre 0.35 y 1
+  // veces `speed` (explosiones, impactos, brillos de recolección).
   function addParticles(x, y, color, count, speed = 160, size = 4) {
     for (let i = 0; i < count; i += 1) {
       const a = rand(0, TAU);
@@ -640,6 +662,7 @@ export function initGame(canvas, options = {}) {
     return base[Math.floor(Math.random() * base.length)];
   }
 
+  // Aliasing: selecciona el tipo de obstáculo según la distribución de la fase.
   function pickObstacleType() {
     return obstacleWeight();
   }
@@ -711,6 +734,8 @@ export function initGame(canvas, options = {}) {
     state.obstacles.push(makeObstacle(type, x, y));
   }
 
+  // Genera un pickup si la probabilidad de la fase lo permite (phase.crystals) y
+  // lo asigna mediante una distribución ponderada de los 8 tipos de power-up.
   function spawnPickup() {
     const phase = currentPhase();
     if (Math.random() > phase.crystals) return;
@@ -741,6 +766,9 @@ export function initGame(canvas, options = {}) {
     state.pickups.push(pickup);
   }
 
+  // Activa el esquive (dash): salto de 110px en la dirección elegida, impulso de
+  // velocidad, cooldown de 0.75s, y recompensa de "esquive inteligente" si hay
+  // un obstáculo peligroso cerca (near-miss).
   function triggerDash() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.dashCooldown > 0) {
@@ -884,6 +912,8 @@ export function initGame(canvas, options = {}) {
     updateHud();
   }
 
+  // Disparo de proyectil: dirección del puntero (o de las flechas si no hay
+// puntero activo). Costo: 1 bala de munición, cooldown de 0.25s.
   function triggerShoot() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.shotCooldown > 0) {
@@ -1024,6 +1054,8 @@ export function initGame(canvas, options = {}) {
     updateHud();
   }
 
+  // Busca el obstáculo en peligro más próximo al frente del jugador (dentro de
+  // `range`); si queda a <64px, se reporta como candidato a "esquive inteligente".
   function findDangerObstacle(range) {
     let best = null;
     let bestDist = Infinity;
@@ -1039,6 +1071,7 @@ export function initGame(canvas, options = {}) {
     return bestDist < 64 ? best : null;
   }
 
+  // Radio de colisión efectivo por tipo (los anillos son más generosos al jugador).
   function collisionRadius(o) {
     if (o.type === "ring") return o.r + 9;
     if (o.type === "shard") return o.r * 0.9;
@@ -1063,6 +1096,7 @@ export function initGame(canvas, options = {}) {
     return d < player.r + collisionRadius(o);
   }
 
+  // Mapa tipo→color de la paleta, usado para partículas/flotantes de destrucción.
   function obstacleColor(o) {
     if (o.type === "cube") return "#9b7dff";
     if (o.type === "stone") return "#ffd166";
@@ -1114,6 +1148,8 @@ export function initGame(canvas, options = {}) {
     addRipple(player.x, player.y, "#4ee7d5", 80, 3);
   }
 
+  // Actualiza los FX de rayos activos y los aturdimientos (stunTimer), con chispas
+  // aleatorias sobre los obstáculos electrificados mientras dura el stun.
   function updateLightningFX(dt) {
     for (const fx of state.lightningFX) {
       fx.timer -= dt;
@@ -1135,6 +1171,8 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Mini-cohete aliado: persigue al jugador (movimiento con distancia acotada por
+  // dt) y dispara al obstáculo más cercano dentro de 300px cada 0.3s.
   function updateAlly(dt) {
     if (!state.ally) return;
     state.ally.timer -= dt;
@@ -1224,6 +1262,10 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // ── Tick principal del juego ─────────────────────────────
+  // Avanza tiempo/distancia/puntuación, drena todos los temporizadores del estado
+  // (cooldowns propios del jugador, coin bonus, congelación...) y despacha cada
+  // subsistema de actualización en orden.
   function update(dt) {
     state.time += dt;
     state.distance += dt * (78 + state.phaseIndex * 4);
@@ -1363,6 +1405,8 @@ export function initGame(canvas, options = {}) {
     state.smoke[state.smoke.length - 1].maxLife = state.smoke[state.smoke.length - 1].life;
   }
 
+  // Actualiza las partículas de humo: deriva, frenado del empuje ascendente y
+  // crecimiento del radio (recorrido inverso con splice para eliminar muertas).
   function updateSmoke(dt) {
     for (let i = state.smoke.length - 1; i >= 0; i--) {
       const s = state.smoke[i];
@@ -1376,6 +1420,8 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Temporiza la aparición de obstáculos y pickups. La dificultad reduce el
+  // intervalo de spawn a medida que crece la distancia recorrida (mínimo 0.52).
   function updateSpawning(dt) {
     const phase = currentPhase();
     state.spawnTimer -= dt;
@@ -1472,6 +1518,9 @@ export function initGame(canvas, options = {}) {
     state.obstacles = state.obstacles.filter((o) => !o.dead && (o.type === "cannibal" ? (o.x > -200 && o.x < width + 200 && o.y > -200 && o.y < height + 200) : o.x > -160));
   }
 
+  // Colisión jugador-obstáculo: destruye el obstáculo, resta 1 vida, reinicia el
+  // combo, otorga invulnerabilidad (1.15s) y aplica efectos de impacto. El game
+  // over se dispara con 260ms de retraso para dejar ver el impacto.
   function handleHit(o) {
     o.dead = true;
     state.health -= 1;
@@ -1579,6 +1628,8 @@ export function initGame(canvas, options = {}) {
     state.pickups = state.pickups.filter((p) => !p.dead && p.x > -80);
   }
 
+  // Mueve los proyectiles; al chocar o salir de pantalla se eliminan con splice
+  // (se recorre con índice y se decrementa al borrar para no saltar elementos).
   function updateProjectiles(dt) {
     for (let i = 0; i < state.projectiles.length; i++) {
       const p = state.projectiles[i];
@@ -1605,6 +1656,7 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Avanza partículas, ondas y textos flotantes, y limpia los agotados con filter.
   function updateEffects(dt) {
     for (const p of state.particles) {
       p.x += p.vx * dt;
@@ -1624,6 +1676,9 @@ export function initGame(canvas, options = {}) {
     state.floating = state.floating.filter((f) => f.life > 0);
   }
 
+  // Orden de dibujo: fondo → modo demo → conexiones magnéticas → pickups →
+  // proyectiles → sombras y cuerpos de obstáculos → rayos/flechas → efectos →
+  // aliado → humo → jugador → textos. El flash y la viñeta se aplican al final.
   function render() {
     ctx.save();
     if (state.shake > 0) {
@@ -1660,6 +1715,8 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Fondo procedural: degradado de cielo, nebulosas radiales, estrellas con
+  // parallax (desplazadas según distancia recorrida) y un halo de luz junto al jugador.
   function drawBackground() {
     const t = state.time;
     const sky = ctx.createLinearGradient(0, 0, width, height);
@@ -1703,6 +1760,8 @@ export function initGame(canvas, options = {}) {
     ctx.fillRect(0, 0, width, height);
   }
 
+  // Modo demo (welcome/gameover): renderiza una muestra de obstáculos animados
+  // en el centro para ambientar la pantalla sin partida activa.
   function drawAttractMode() {
     const t = performance.now() / 1000;
     const centerX = width * 0.58;
@@ -1717,6 +1776,8 @@ export function initGame(canvas, options = {}) {
     for (const o of samples) drawObstacle(o, true);
   }
 
+  // Agrupa obstáculos por grupo magnético y dibuja sus uniones como curvas
+  // discontinuas animadas (línea punteada, más visible cerca del jugador).
   function drawMagnetConnections() {
     const groups = new Map();
     for (const o of state.obstacles) {
@@ -1840,6 +1901,8 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Renderizado del pacman caníbal: cuerpo con gradiente, ojos, cachetes y boca
+  // que se abre/cierra según o.mouth (animación de masticado).
   function drawCannibal(o, reveal) {
     const r = o.r;
     const angle = o.angle;
@@ -1912,6 +1975,8 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Cubo metamórfico: número de lados (4-8) y radio que mutan con el tiempo (morph),
+  // gradiente "viaje espacial" y rejilla + puntos de luz cuando se revela.
   function drawMetamorphicCube(o, reveal, frozen) {
     const morph = (Math.sin(o.phase * 2.1 + o.seed) + 1) / 2;
     const sides = 4 + Math.floor(morph * 4);
@@ -1970,6 +2035,8 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Piedra de balance: polígono irregular de 12 lados con rotación oscilante,
+  // brillo dorado-marrón y vetas curvas al revelarse.
   function drawBalanceStone(o, reveal, frozen) {
     const r = o.r;
     ctx.save();
@@ -2018,6 +2085,8 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Anillo infinito: arco pulsante con nodos rosados y espiral decorativa al
+  // revelar. Colisiona tanto por su pared como por el centro (collidesWithPlayer).
   function drawInfiniteRing(o, reveal, frozen) {
     const r = o.r + Math.sin(o.phase * 2.4) * 5;
     const thickness = 10 + Math.sin(o.phase * 1.8) * 2;
@@ -2062,6 +2131,7 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Fragmento afilado: polígono en ángulo con gradiente blanco-rosa-dorado.
   function drawShard(o, reveal, frozen) {
     const r = o.r;
     const grad = ctx.createLinearGradient(-r, -r, r, r);
@@ -2089,6 +2159,9 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Renderizado de pickups: cada tipo tiene su forma propia (corazón, caja de
+  // munición, cubo arcoíris, cohete, remolino, cristal de hielo, flecha, moneda
+  // dorada o cristal de pulso). Composite "lighter" + glow para aspecto brillante.
   function drawPickup(p) {
     ctx.save();
     ctx.translate(p.x, p.y);
@@ -2292,6 +2365,7 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Mini-cohete aliado en pantalla (misma forma que el pickup greenRocket, girando).
   function drawAlly() {
     if (!state.ally) return;
     ctx.save();
@@ -2321,6 +2395,7 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Balas: círculos brillantes (dorado para el jugador, verde para el aliado según p.color).
   function drawProjectiles() {
     for (const p of state.projectiles) {
       ctx.save();
@@ -2335,6 +2410,8 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Rayos: trazo quebrado de dos capas desde arriba (topX, -10) hasta el objetivo,
+  // con destello final. El zigzag se regenera cada frame (Math.random).
   function drawLightningBolts() {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
@@ -2386,6 +2463,7 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Flechas cayendo: línea con punta triangular; el alpha oscila al comienzo.
   function drawArrowRain() {
     if (!state.arrowRainFX) return;
     ctx.save();
@@ -2415,6 +2493,7 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Ondas expansivas: el radio crece según el progreso (p) y el alpha se desvanece.
   function drawRipples() {
     for (const r of state.ripples) {
       const p = 1 - r.life / r.max;
@@ -2430,6 +2509,7 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Humo: círculos grises desenfocados (ctx.filter blur) que se desvanecen al final de su vida.
   function drawSmoke() {
     for (const s of state.smoke) {
       const alpha = Math.max(0, s.life / s.maxLife) * 0.25;
@@ -2444,6 +2524,7 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Partículas: cuadrados rotados con composite "lighter" y fade controlado por la vida.
   function drawParticles() {
     for (const p of state.particles) {
       ctx.save();
@@ -2457,6 +2538,7 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Textos flotantes del feedback de juego (puntuación, avisos de power-up).
   function drawFloating() {
     ctx.save();
     ctx.textAlign = "center";
@@ -2471,6 +2553,9 @@ export function initGame(canvas, options = {}) {
     ctx.restore();
   }
 
+  // Nave del jugador: llamarada (más larga durante el dash), cuerpo con gradiente
+  // que se enrojece al recibir daño, aletas, ventana brillante y parpadeo de
+  // invulnerabilidad (invuln) o aspecto fantasmal al estar invisible (alpha 0.4).
   function drawPlayer() {
     if (player.invisible && player.invisibleTimer > 0) {
       ctx.globalAlpha = 0.4;
@@ -2574,6 +2659,7 @@ export function initGame(canvas, options = {}) {
     }
   }
 
+  // Viñeta oscura en los bordes para dar un enfoque cinematográfico.
   function drawVignette() {
     const v = ctx.createRadialGradient(width / 2, height / 2, Math.min(width, height) * 0.24, width / 2, height / 2, Math.max(width, height) * 0.72);
     v.addColorStop(0, "rgba(0,0,0,0)");
@@ -2582,6 +2668,10 @@ export function initGame(canvas, options = {}) {
     ctx.fillRect(0, 0, width, height);
   }
 
+  // ── Bucle principal ──────────────────────────────────────
+  // requestAnimationFrame → calcula dt (capado a 33ms), actualiza el mundo si
+  // hay partida activa (o avanza la animación de menú en caso contrario) y
+  // redibuja. Se auto-reencola para mantener el loop.
   function frame(timestamp) {
     const now = timestamp / 1000;
     const dt = Math.min(0.033, now - (lastFrame || now));
@@ -2599,6 +2689,7 @@ export function initGame(canvas, options = {}) {
     requestAnimationFrame(frame);
   }
 
+  // Traduce códigos de teclado (flechas y WASD) al estado de entrada booleano.
   function setKey(code, down) {
     if (code === "ArrowUp" || code === "KeyW") input.up = down;
     if (code === "ArrowDown" || code === "KeyS") input.down = down;
@@ -2649,6 +2740,8 @@ export function initGame(canvas, options = {}) {
   function handleKeyUp(event) { setKey(event.code, false); }
   window.addEventListener("keyup", handleKeyUp);
 
+  // Puntero: fija la posición de seguimiento y detecta doble toque rápido
+  // (<280ms) para disparar el dash.
   function handlePointerDown(event) {
     if (state.mode !== "playing") return;
     event.preventDefault();
@@ -2661,6 +2754,7 @@ export function initGame(canvas, options = {}) {
   }
   canvas.addEventListener("pointerdown", handlePointerDown, { passive: false });
 
+  // Sigue el puntero continuamente (el jugador se desplaza hacia él con lerp).
   function handlePointerMove(event) {
     event.preventDefault();
     input.pointer = true;
@@ -2669,6 +2763,7 @@ export function initGame(canvas, options = {}) {
   }
   canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
 
+  // Al redimensionar la ventana, reconstruye las estrellas y re-ajusta el canvas.
   function handleResize() { buildStars(); resize(); }
   window.addEventListener("resize", handleResize);
 

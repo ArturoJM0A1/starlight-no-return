@@ -5,6 +5,7 @@ import TopGlobalModal from './TopGlobalModal';
 import ContactFooter from './ContactFooter';
 import StartMascot from './StartMascot';
 
+// Estilos de los botones principales (inline style objects de React).
 const goldBtn = {
   marginTop: 20, padding: '12px 28px', fontSize: '0.95rem', fontWeight: 700,
   background: 'linear-gradient(135deg, #f6d365, #fda085, #f6d365)',
@@ -25,11 +26,15 @@ const ghostBtn = {
 };
 
 export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
+  // Estado local de los modales: showAuth (iniciar/registrar) y showTop (ranking).
+  // setX solicita re-render; al ser true, React monta el modal correspondiente.
   const [showAuth, setShowAuth] = useState(false);
   const [showTop, setShowTop] = useState(false);
 
   return (
     <section id="welcomeScreen" className="screen screen-welcome">
+      {/* <style> inline: React inyecta estas reglas CSS solo mientras este
+          componente esté montado (las keyframes de rebote/brillo del botón). */}
       <style>{`
         .bounce-btn {
           background: linear-gradient(135deg, #1a73e8, #4a90d9, #1a73e8) !important;
@@ -90,7 +95,10 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
          }
        `}</style>
 
-      {/* Botón cerrar sesión: solo visible si hay usuario logueado */}
+      {/* Botón cerrar sesión: solo visible si hay usuario logueado
+          Render condicional: `user && (...)` — si user es truthy se dibuja.
+          onClick async: logoutUser() cierra sesión en Firebase y recarga la
+          página para reiniciar el estado de la app desde cero. */}
       {user && (
         <button
           onClick={async () => { try { await logoutUser(); window.location.reload(); } catch (_) {} }}
@@ -111,6 +119,8 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         <div className="mini-rocket" aria-hidden="true"></div>
         <span>Bienvenido, piloto</span>
       </div>
+      {/* Título con gradiente de texto: el fondo degradado se recorta a la forma
+          de las letras con background-clip:text; animation hl-texte mueve el fondo. */}
       <h1 style={{
         fontFamily: "'Euphorigenic', serif",
         fontSize: 'clamp(2rem, 6vw, 5rem)',
@@ -131,9 +141,12 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         Juego para computadora (no disponible en celular)
       </p>
       <div className="welcome-actions">
+        {/* Props de evento: onClick recibe una función callback que React llama
+            al hacer clic. onNext llega como prop desde App (cambia modo). */}
         <button id="nextButton" className="primary-button bounce-btn" onClick={onNext}>
           Iniciar viaje
         </button>
+        {/* El botón de sonido usa la API pública del motor (toggleMute). */}
         <button
           id="muteButtonIntro"
           className="ghost-button"
@@ -143,6 +156,7 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
           Sonido
         </button>
       </div>
+      {/* Mensaje de bienvenida/nombre: texto según haya sesión (ternario). */}
       {user ? (
         <p style={{ marginTop: 18, fontSize: '1.1rem', color: '#b8c4d9', textAlign: 'center' }}>
           Hola <span style={{ color: '#f6d365', fontWeight: 600 }}>{user.username}</span>
@@ -153,6 +167,8 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
         </p>
       )}
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+        {/* Los eventos onMouseEnter/onMouseLeave mutan el estilo del nodo del botón
+            (e.currentTarget) directamente para el efecto hover imperativo. */}
         <button
           style={goldBtn}
           onClick={() => setShowAuth(true)}
@@ -174,6 +190,9 @@ export default function WelcomeScreen({ onNext, engine, onAuth, user }) {
       </div>
       <ContactFooter />
       <StartMascot variant="welcome" />
+      {/* Render condicional de modales: montados solo cuando su estado es true.
+          onClose/onAuth son callbacks que los modales invocan para comunicarse
+          con este componente (cerrar) y con App (usuario autenticado). */}
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={onAuth} />}
       {showTop && <TopGlobalModal user={user} onClose={() => setShowTop(false)} />}
     </section>

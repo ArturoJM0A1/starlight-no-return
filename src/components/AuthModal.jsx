@@ -4,6 +4,9 @@ import { registerUser, loginUser, getUserProfile, resetPassword } from '../fireb
 // El nombre de usuario debe comenzar con @, solo letras y números, máximo 15 caracteres
 const VALID_USERNAME = /^@[a-zA-Z0-9]+$/;
 
+// Validador de nombre de usuario: devuelve un string con el primer error
+// encontrado o cadena vacía si es válido. Fuerza el patrón, el '@' inicial
+// y el límite de 15 caracteres.
 function validateUsername(val) {
   if (!val.startsWith('@')) return 'Debe comenzar con @';
   if (val.length > 15) return 'Máximo 15 caracteres';
@@ -11,6 +14,7 @@ function validateUsername(val) {
   return '';
 }
 
+// Objetos de estilo inline del modal (overlay con blur de fondo, tarjeta central)
 const overlay = {
   position: 'absolute', inset: 0, zIndex: 20,
   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -42,6 +46,7 @@ const input = {
   boxSizing: 'border-box', transition: 'border-color 0.2s, box-shadow 0.2s',
 };
 
+// Estilo de input con error: reutiliza input y solo cambia el color del borde
 const inputError = { ...input, borderColor: '#ff4b6e' };
 
 const errorMsg = { fontSize: '0.75rem', color: '#ff4b6e', marginTop: 4 };
@@ -73,6 +78,11 @@ const closeBtn = {
 };
 
 export default function AuthModal({ onClose, onAuth }) {
+  // Estado del formulario:
+  // mode: 'login' | 'register' | 'forgot' (pantalla activa del modal).
+  // Resto: valores controlados de los inputs (value + onChange siempre sincronizan).
+  // errors: objeto { campo: mensaje } para validación; loading: flag async.
+  // sent: confirma envío del correo de reset; welcomeUser: feedback tras logueo.
   const [mode, setMode] = useState('login');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -84,6 +94,7 @@ export default function AuthModal({ onClose, onAuth }) {
   // Alterna visibilidad de la contraseña (icono de ojo)
   const [showPassword, setShowPassword] = useState(false);
 
+  // Limpia todos los campos y errores (se usa al cambiar de modo)
   function resetForm() {
     setUsername('');
     setEmail('');
@@ -93,10 +104,15 @@ export default function AuthModal({ onClose, onAuth }) {
     setShowPassword(false);
   }
 
+  // Handler del <form onSubmit>: valida, llama a Firebase y maneja errores.
+  // e.preventDefault() evita el recargado de la página (comportamiento nativo).
   async function handleSubmit(e) {
     e.preventDefault();
     const errs = {};
 
+    // Modo 'forgot': validar que exista usuario y correo, luego enviar email
+    // de recuperación. Firebase lanza errores con código; se traducen con un
+    // mapa { codigo: mensaje } y se muestran en 'firebase'.
     if (mode === 'forgot') {
       if (!username) errs.username = 'Campo obligatorio';
       else { const u = validateUsername(username); if (u) errs.username = u; }
@@ -121,6 +137,7 @@ export default function AuthModal({ onClose, onAuth }) {
       return;
     }
 
+    // Modos 'login'/'register': validación en cliente de username y password.
     const uErr = validateUsername(username);
     if (uErr) errs.username = uErr;
     if (!password) errs.password = 'Campo obligatorio';
@@ -130,12 +147,15 @@ export default function AuthModal({ onClose, onAuth }) {
 
     setLoading(true);
     try {
+      // Ejecuta la operación de Firebase según el modo seleccionado.
       let user;
       if (mode === 'register') {
         user = await registerUser(username, email, password);
       } else {
         user = await loginUser(username, password);
       }
+      // Busca el perfil (email + mejor puntuación) y lo sube a App mediante
+      // el callback onAuth (prop). Así App setea su estado y repinta la UI.
       const profile = await getUserProfile(user.uid);
       if (onAuth) onAuth({
         uid: user.uid,
@@ -144,8 +164,10 @@ export default function AuthModal({ onClose, onAuth }) {
         bestScore: profile?.bestScore || 0,
       });
       setWelcomeUser(user.displayName || username);
+      // Mensaje de éxito y cierre automático del modal tras 2 segundos.
       setTimeout(() => onClose(), 2000);
     } catch (err) {
+      // Traducción de códigos de error de Firebase Auth a texto legible.
       const map = {
         'auth/email-already-in-use': 'El correo ya está registrado',
         'auth/invalid-email': 'Correo inválido',
@@ -163,10 +185,13 @@ export default function AuthModal({ onClose, onAuth }) {
     <div style={overlay}>
       <div style={card}>
         <button style={closeBtn} onClick={onClose} aria-label="Cerrar">&times;</button>
+        {/* El título cambia según el modo (ternario anidado). */}
         <div style={title}>
           {mode === 'login' ? 'Iniciar sesión' : mode === 'forgot' ? 'Restablecer contraseña' : 'Crear cuenta'}
         </div>
 
+        {/* Después de autenticarse se muestra pantalla de bienvenida con emoji;
+            si no, se dibuja el formulario. */}
         {welcomeUser ? (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
             <div style={{ fontSize: '2rem', marginBottom: 12 }}>🚀</div>
@@ -180,6 +205,9 @@ export default function AuthModal({ onClose, onAuth }) {
                 Para restablecer tu contraseña ingresa tu nombre de usuario y correo
               </p>
 
+              {/* Inputs controlados: value=estado y onChange actualiza el estado.
+                  style condicional: borde rojo si el campo tiene error.
+                  Errors se renderizan debajo del input (validation message). */}
               <label style={label}>Nombre de usuario</label>
               <input
                 style={errors.username ? inputError : input}
@@ -206,6 +234,7 @@ export default function AuthModal({ onClose, onAuth }) {
               {errors.firebase && <div style={{ ...errorMsg, marginTop: 12, textAlign: 'center' }}>{errors.firebase}</div>}
               {sent && <div style={successMsg}>Correo de restablecimiento enviado. Revisa tu bandeja de entrada. NO OLVIDES CHECAR SPAM</div>}
 
+              {/* El botón se oculta tras enviar (sent) y se atenúa mientras carga. */}
               {!sent && (
                 <button type="submit" style={{ ...btnPrimary, opacity: loading ? 0.6 : 1 }} disabled={loading}>
                   {loading ? '...' : 'Enviar correo'}
@@ -226,6 +255,7 @@ export default function AuthModal({ onClose, onAuth }) {
               />
               {errors.username && <div style={errorMsg}>{errors.username}</div>}
 
+              {/* El correo solo se pide en modo registro; en login no existe campo. */}
               {mode === 'register' && (
                 <>
                   <label style={label}>Correo electrónico</label>
@@ -242,6 +272,9 @@ export default function AuthModal({ onClose, onAuth }) {
               )}
 
               <label style={label}>Contraseña</label>
+              {/* Contenedor relative + botón absolute: el "ojo" se sobrepone
+                  a la derecha del input. showPassword se alterna para cambiar
+                  type text/password (toggle de visibilidad). */}
               <div style={{ position: 'relative' }}>
                 <input
                   style={{ ...(errors.password ? inputError : input), paddingRight: 40 }}
@@ -262,6 +295,8 @@ export default function AuthModal({ onClose, onAuth }) {
                   }}
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
+                  {/* Icono SVG con stroke (estilo Feather icons). Render condicional
+                      del path según el estado de visibilidad. */}
                   {showPassword ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
@@ -280,6 +315,8 @@ export default function AuthModal({ onClose, onAuth }) {
 
               {errors.firebase && <div style={{ ...errorMsg, marginTop: 12, textAlign: 'center' }}>{errors.firebase}</div>}
 
+              {/* El texto del botón de submit depende del modo; disabled + opacity
+                  durante la operación async para evitar dobles submits. */}
               <button type="submit" style={{ ...btnPrimary, opacity: loading ? 0.6 : 1 }} disabled={loading}>
                 {loading ? '...' : (mode === 'login' ? 'Entrar' : 'Registrarse')}
               </button>
@@ -288,6 +325,8 @@ export default function AuthModal({ onClose, onAuth }) {
         </form>
         )}
 
+        {/* Enlaces de cambio de modo: al hacer clic, setMode('otro') + resetForm()
+            limpia el formulario y vuelve a mostrar un estado consistente. */}
         <div style={toggleText}>
           {mode === 'login' ? (
             <>

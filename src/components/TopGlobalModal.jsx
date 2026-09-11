@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getTopPlayers } from '../firebase';
 
+// Objetos de estilo inline del modal de Top Global (ranking de jugadores)
 const overlay = {
   position: 'absolute', inset: 0, zIndex: 20,
   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -21,10 +22,12 @@ const title = {
   marginBottom: 16,
 };
 
+// Estructura en dos columnas: ranking (lista desplazable) + panel del campeón
 const bodyRow = {
   display: 'flex', gap: 48, flex: 1, minHeight: 0,
 };
 
+// Contenedor de la lista con scroll vertical (acotado a 55vh)
 const listWrap = {
   flex: 1, overflowY: 'auto', maxHeight: '55vh',
 };
@@ -33,6 +36,8 @@ const list = {
   listStyle: 'none', padding: 0, margin: 0,
 };
 
+// Función que devuelve el estilo de una fila: resalta con fondo azul la fila
+// del jugador logueado (isMe) y alterna el fondo (zebra) por paridad de índice.
 const row = (i, isMe) => ({
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
   padding: '8px 12px',
@@ -48,6 +53,7 @@ const nameCell = {
   flex: 1, fontSize: '0.85rem', color: '#f8fbff', marginLeft: 8,
 };
 
+// fontVariantNumeric tabular-nums: dígitos de ancho fijo para alinear columnas
 const scoreCell = {
   fontSize: '0.8rem', color: '#f6d365', fontWeight: 600,
   fontVariantNumeric: 'tabular-nums',
@@ -80,9 +86,16 @@ const champMsg = {
 };
 
 export default function TopGlobalModal({ user, onClose }) {
+  // Estado del ranking: players (lista) y loading (flag de carga inicial).
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /*
+    useEffect [] (sin dependencias): se ejecuta UNA sola vez al montar el modal.
+    Consulta asíncrona a Firestore (getTopPlayers) ordenada por mejor puntuación.
+    .then(setPlayers): pasa solo el primer argumento (la lista) al setter;
+    .catch: lista vacía en caso de error; .finally: apaga el loading.
+  */
   useEffect(() => {
     getTopPlayers()
       .then(setPlayers)
@@ -90,10 +103,13 @@ export default function TopGlobalModal({ user, onClose }) {
       .finally(() => setLoading(false));
   }, []);
 
+  // El campeón es el primer elemento de la lista (mejor puntuación global).
   const champ = players.length > 0 ? players[0] : null;
 
   return (
     <div style={overlay}>
+      {/* CSS inline del modal: animación de brillo del mensaje del campeón
+          y scrollbar personalizado para la lista (solo con WebKit). */}
       <style>{`
         .champ-msg {
           animation: champGlow 2s ease-in-out infinite;
@@ -120,6 +136,7 @@ export default function TopGlobalModal({ user, onClose }) {
         <button style={closeBtn} onClick={onClose} aria-label="Cerrar">&times;</button>
         <div style={title}>Top Global</div>
 
+        {/* Render condicional en 3 estados: cargando / sin datos / ranking. */}
         {loading ? (
           <div style={empty}>Cargando...</div>
         ) : players.length === 0 ? (
@@ -128,6 +145,9 @@ export default function TopGlobalModal({ user, onClose }) {
           <div style={bodyRow}>
             <div style={listWrap} className="list-wrap">
               <ul style={list}>
+                {/* .map convierte cada jugador en un <li>; key={p.uid} identifica
+                    cada fila para que React reconcilie sin recrearlas.
+                    isMe: true si coincide el usuario logueado, para resaltarlo. */}
                 {players.map((p, i) => (
                   <li key={p.uid} style={row(i, user && p.username === user.username)}>
                     <span style={rank}>#{i + 1}</span>
@@ -137,6 +157,8 @@ export default function TopGlobalModal({ user, onClose }) {
                 ))}
               </ul>
             </div>
+            {/* Panel lateral del número 1: imagen fija + mensaje con fans de
+                interpolación de template literal al nombre del campeón. */}
             <div style={rightPanel}>
               <img src="/elnumero1.png" alt="#1" style={champImg} />
               <div style={champMsg} className="champ-msg">Felicidades {champ.username} eres el número 1 🏆</div>

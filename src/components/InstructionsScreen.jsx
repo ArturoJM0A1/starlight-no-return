@@ -2,8 +2,13 @@ import React from 'react';
 import ContactFooter from './ContactFooter';
 import StartMascot from './StartMascot';
 
+// Helper que envuelve un string SVG en un objeto { __html } (estructura que
+// dangerouslySetInnerHTML exige). Permite declarar SVGs como strings con
+// reutilización de código.
 const s = (d) => ({ __html: `<svg viewBox="0 0 20 20" width="20" height="20" style="flex-shrink:0">${d}</svg>` });
 
+// Diccionario de iconos para cada mecánica/power-up del juego. Cada entrada
+// es un string SVG generado por s(...).
 const ICONS = {
   heart: s('<path d="M10 17.5S3 12.5 3 8a4 4 0 0 1 7-2.5A4 4 0 0 1 17 8c0 4.5-7 9.5-7 9.5z" fill="#ff4b6e"/>'),
   ammo: s('<rect x="3" y="6" width="14" height="8" rx="1" fill="#ffd166"/><rect x="6" y="8" width="8" height="4" fill="#f8fbff"/>'),
@@ -18,6 +23,12 @@ const ICONS = {
   coin: s('<circle cx="10" cy="10" r="9" fill="#ffd700" stroke="#daa520" stroke-width="1"/><circle cx="10" cy="10" r="6" fill="#ffec8a"/><text x="10" y="13" text-anchor="middle" fill="#b8860b" font-size="11" font-weight="bold">$</text>'),
 };
 
+/*
+  Componente Icon: componentes funcionales de una sola línea que renderizan
+  HTML crudo. La prop `type` (destructuring) se usa como clave de ICONS.
+  dangerouslySetInnerHTML es el mecanismo de React para inyectar HTML string
+  directo (aquí es seguro porque el SVGs es 100% local, no input de usuario).
+*/
 const Icon = ({ type }) => <span dangerouslySetInnerHTML={ICONS[type]} />;
 
 export default function InstructionsScreen({ onBack, engine }) {
@@ -33,6 +44,7 @@ export default function InstructionsScreen({ onBack, engine }) {
       </p>
 
       <div className="instruction-grid" aria-label="Mecánicas del juego">
+        {/* Tarjetas estáticas de instrucciones (texto e iconos). */}
         <article>
           <strong>Movimiento</strong>
           <span>Mouse.</span>
@@ -108,9 +120,11 @@ export default function InstructionsScreen({ onBack, engine }) {
       </div>
 
       <div className="welcome-actions">
+        {/* onBack: callback prop desde App ({ onBack }) para volver al menú. */}
         <button id="backButton" className="ghost-button" onClick={onBack}>
           ← Volver
         </button>
+        {/* startGame del motor inicia la partida (engine.current es la ref de App). */}
         <button
           id="startButton"
           className="primary-button"

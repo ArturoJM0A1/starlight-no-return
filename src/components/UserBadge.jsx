@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Estilo de la insignia de usuario en juego: fija arriba-izquierda.
+// pointerEvents:'none' + userSelect:'none' evitan que el texto interfiera
+// con los clics del puntero sobre el canvas (el juego se juega con el mouse).
 const style = {
   position: 'absolute',
   top: 8,
@@ -13,6 +16,7 @@ const style = {
 };
 
 export default function UserBadge({ user }) {
+  // Render condicional: si no hay sesión no se muestra nada (return null).
   if (!user) return null;
   return (
     <div style={style}>
