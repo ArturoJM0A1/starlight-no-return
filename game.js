@@ -1,10 +1,22 @@
+// ═══════════════════════════════════════════════════════════════
+//  MOTOR LEGACY (game.js) — versión standalone en IIFE.
+//  Fue el motor original del juego, de ejecución directa en el navegador
+//  (sin React ni ES modules). Comparte la misma lógica que
+//  src/game/engine.js (el motor que usa la app actual). Todas las
+//  variables y funciones viven dentro de este closure para no contaminar
+//  el ámbito global.
+// ═══════════════════════════════════════════════════════════════
 (() => {
   "use strict";
 
+  // ── Referencias al DOM ─────────────────────────────────────
+  // Se consultan UNA sola vez al inicio (los nodos existen en index.html).
   const canvas = document.getElementById("gameCanvas");
+  // Contexto 2D del canvas y shell contenedor (la clase "paused" marca la pausa visual).
   const ctx = canvas.getContext("2d");
   const shell = document.querySelector(".game-shell");
 
+  // Pantallas y paneles HUD (welcome, game over, marcadores, toasts).
   const welcomeScreen = document.getElementById("welcomeScreen");
   const gameOverScreen = document.getElementById("gameOverScreen");
   const hud = document.getElementById("hud");
@@ -16,11 +28,13 @@
   const phaseToast = document.getElementById("phaseToast");
   const comboToast = document.getElementById("comboToast");
   const finalStats = document.getElementById("finalStats");
+  // Controles táctiles y botones de pausa/sonido.
   const touchControls = document.getElementById("touchControls");
   const pauseButton = document.getElementById("pauseButton");
   const muteButton = document.getElementById("muteButton");
   const muteButtonIntro = document.getElementById("muteButtonIntro");
 
+  // Botones de las pantallas (iniciar, reintentar, volver, dash/pulso táctiles).
   const startButton = document.getElementById("startButton");
   const restartButton = document.getElementById("restartButton");
   const homeButton = document.getElementById("homeButton");
@@ -28,6 +42,10 @@
   const pulseTouch = document.getElementById("pulseTouch");
 
   const TAU = Math.PI * 20;
+  // ── Definiciones de fase ──────────────────────────────────
+  // El juego cicla 4 fases: Calma → Ascenso → Tormenta → Respiro.
+  // Cada una define duración, intervalo de spawn, velocidad relativa,
+  // tasa de aparición de pickups (crystals), color de tema y toast inicial.
   const PHASES = [
     {
       name: "Calma",
@@ -87,6 +105,10 @@
     lastTap: 0,
   };
 
+  // ── Estado global del juego ───────────────────────────────
+  // mode: pantalla activa del juego; tiempo/distancia/puntuación acumuladas;
+  // mejor marca persistida en localStorage; arreglos de entidades vivas
+  // (obstáculos, proyectiles, pickups, efectos) y temporizadores de power-ups.
   const state = {
     mode: "welcome",
     paused: false,
@@ -118,6 +140,9 @@
     lightningFX: [],
   };
 
+  // ── Estado del jugador ────────────────────────────────────
+  // x/y + velocidades, radio (r), energía del pulso, munición, cooldowns de
+  // dash/pulso/disparo, invulnerabilidad temporal, invisibilidad y cargas de rayo.
   const player = {
     x: 150,
     y: 240,
@@ -141,28 +166,35 @@
     lightningCharges: 4,
   };
 
+  // Número aleatorio uniforme en el intervalo [min, max].
   function rand(min, max) {
     return min + Math.random() * (max - min);
   }
 
+  // Limita un valor al intervalo [min, max].
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
   }
 
+  // Distancia euclidiana entre dos puntos {x, y}.
   function dist(a, b) {
     return Math.hypot(a.x - b.x, a.y - b.y);
   }
 
+  // Normaliza un vector; devuelve (1,0) si la magnitud es casi cero.
   function normalize(x, y) {
     const len = Math.hypot(x, y);
     if (len < 0.001) return { x: 1, y: 0 };
     return { x: x / len, y: y / len };
   }
 
+  // Devuelve el objeto de fase vigente (cicla entre las 4 fases definidas).
   function currentPhase() {
     return PHASES[state.phaseIndex % PHASES.length];
   }
 
+  // Ajusta el canvas a la ventana con devicePixelRatio (nítido en HiDPI)
+  // y recoloca al jugador dentro de los márgenes si quedó fuera tras el resize.
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     width = window.innerWidth;
@@ -178,6 +210,7 @@
     player.y = clamp(player.y || height / 2, 78, height - 64);
   }
 
+  // Crea la capa de estrellas de fondo (cantidad proporcional al área visible).
   function buildStars() {
     state.stars = [];
     const total = Math.round(clamp((width * height) / 8200, 64, 180));
@@ -194,6 +227,8 @@
     }
   }
 
+  // Reinicia todo el estado del juego para una nueva partida: limpia entidades,
+  // restaura vidas/energía/municiones del jugador y reinicia temporizadores.
   function resetGame() {
     obstacleId = 0;
     magnetId = 0;
@@ -247,6 +282,8 @@
     updateHud();
   }
 
+  // Inicia una nueva partida: crea el AudioContext bajo demanda, reinicia el
+  // estado y muestra/oculta las pantallas y controles correspondientes.
   function startGame() {
     ensureAudio();
     resetGame();
@@ -261,6 +298,7 @@
     sfx("start");
   }
 
+  // Vuelve a la pantalla de bienvenida: oculta el HUD, los controles y la pausa.
   function returnHome() {
     state.mode = "welcome";
     state.paused = false;
@@ -273,6 +311,8 @@
     shell.classList.remove("paused");
   }
 
+  // Fin de partida: congela el mundo, guarda la mejor puntuación en localStorage,
+  // muestra el game over con las estadísticas resumidas en #finalStats.
   function showGameOver() {
     state.mode = "gameover";
     state.paused = false;
@@ -289,6 +329,7 @@
     sfx("fail");
   }
 
+  // Pausa/reanuda la partida en curso; alterna la clase "paused" del shell y el icono del botón.
   function togglePause() {
     if (state.mode !== "playing") return;
     state.paused = !state.paused;
@@ -297,6 +338,7 @@
     sfx("click");
   }
 
+  // Silencia los SFX y sincroniza ambos botones de sonido (HUD e intro).
   function toggleMute() {
     muted = !muted;
     muteButton.textContent = muted ? "×" : "♪";
@@ -304,6 +346,8 @@
     muteButtonIntro.textContent = muted ? "Silenciado" : "Sonido";
   }
 
+  // Crea el AudioContext bajo demanda en la primera interacción del usuario
+  // (debe ocurrir dentro de un gesto). Resumir es idempotente y seguro.
   function ensureAudio() {
     if (!audioCtx) {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -314,6 +358,10 @@
     }
   }
 
+  // ── Sistema de SFX procedural ────────────────────────────
+  // Genera todos los efectos de sonido con osciladores de Web Audio API
+  // (sin archivos de audio). Cada tipo mapea a un barrido de frecuencia
+  // con envolvente de ganancia y, opcionalmente, armónicos con detune.
   function sfx(type) {
     if (muted || !audioCtx) return;
     const now = audioCtx.currentTime;
@@ -414,10 +462,14 @@
     master.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
   }
 
+  // Vibración háptica del dispositivo (no soportada en todos los navegadores/desktop).
   function vibrate(pattern) {
     if (navigator.vibrate) navigator.vibrate(pattern);
   }
 
+  // Actualiza todos los paneles del HUD con el estado actual del juego: puntuación,
+  // fase (con su color), vidas, munición, puntos de energía (recreados por
+  // DOM) e indicadores dinámicos de power-ups activos.
   function updateHud() {
     scoreValue.textContent = Math.round(state.score).toLocaleString("es-MX");
     phaseValue.textContent = currentPhase().name;
@@ -478,6 +530,8 @@
     }
   }
 
+  // Toast de fase durante 1.9s; guarda el timeout en la función para reiniciarlo
+  // si llega un nuevo mensaje antes de expirar.
   function showPhaseToast(message) {
     phaseToast.textContent = message;
     phaseToast.classList.remove("hidden");
@@ -485,6 +539,7 @@
     showPhaseToast.timer = setTimeout(() => phaseToast.classList.add("hidden"), 1900);
   }
 
+  // Toast breve (900ms) para cadenas/near-misses, con el mismo truco de timer único.
   function showComboToast(message) {
     comboToast.textContent = message;
     comboToast.classList.remove("hidden");
@@ -492,14 +547,18 @@
     showComboToast.timer = setTimeout(() => comboToast.classList.add("hidden"), 900);
   }
 
+  // Texto flotante de feedback (+puntos, avisos de power-up). Se anima subiendo.
   function addFloating(text, x, y, color = "#f8fbff") {
     state.floating.push({ text, x, y, color, life: 1, max: 1 });
   }
 
+  // Onda expansiva circular; su radio/alpha se calculan en drawRipples.
   function addRipple(x, y, color, radius, widthLine = 3) {
     state.ripples.push({ x, y, color, radius, widthLine, life: 0.55, max: 0.55 });
   }
 
+  // Crea `count` partículas con dirección aleatoria y velocidad entre 0.35 y 1
+  // veces `speed` (explosiones, impactos, brillos de recolección).
   function addParticles(x, y, color, count, speed = 160, size = 4) {
     for (let i = 0; i < count; i += 1) {
       const a = rand(0, TAU);
@@ -519,6 +578,9 @@
     }
   }
 
+  // ── Fábrica de obstáculos ─────────────────────────────────
+  // Crea un obstáculo con propiedades según su tipo (radio, velocidad, deriva,
+  // giro). El parámetro `group` enlaza obstáculos magnéticamente (pares).
   function makeObstacle(type, x, y, group = null) {
     const phase = currentPhase();
     const difficulty = 1 + state.distance / 6200;
@@ -581,6 +643,7 @@
     return common;
   }
 
+  // Distribución de tipos de obstáculo según la fase. Cannibal tiene ~18% fijo.
   function obstacleWeight() {
     const phase = currentPhase().name;
     const base = [];
@@ -592,10 +655,13 @@
     return base[Math.floor(Math.random() * base.length)];
   }
 
+  // Aliasing: selecciona el tipo de obstáculo según la distribución de la fase.
   function pickObstacleType() {
     return obstacleWeight();
   }
 
+  // Elige una posición Y de generación que evite aglomeraciones, puntuando
+  // candidatos por distancia a obstáculos existentes y sesgo hacia el centro.
   function clearSpawnY() {
     const top = Math.max(100, height * 0.18);
     const bottom = height - Math.max(88, height * 0.18);
@@ -622,6 +688,8 @@
     return best;
   }
 
+  // Genera obstáculos (o pares magnéticos en Tormenta/Ascenso). Los cannibales
+  // pueden aparecer desde cualquiera de los dos lados del tablero.
   function spawnObstacle() {
     const type = pickObstacleType();
     if (type === "cannibal") {
@@ -659,6 +727,9 @@
     state.obstacles.push(makeObstacle(type, x, y));
   }
 
+  // Genera un pickup si la probabilidad de la fase lo permite y lo asigna con
+  // una distribución ponderada (corazón, munición, arcoíris, cohete, remolino,
+  // hielo, rayo o cristal de pulso).
   function spawnPickup() {
     const phase = currentPhase();
     if (Math.random() > phase.crystals) return;
@@ -688,6 +759,9 @@
     state.pickups.push(pickup);
   }
 
+  // Activa el esquive (dash): salto de 110px en la dirección elegida, impulso de
+  // velocidad, pequeños frames de invulnerabilidad (0.34s) y recompensa de
+  // "esquive inteligente" si hay un obstáculo peligroso cerca (near-miss).
   function triggerDash() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.dashCooldown > 0) {
@@ -721,6 +795,11 @@
     }
   }
 
+  // ── Selección inteligente de dirección de dash ───────────
+  // 1. Flechas del teclado → usar esa dirección.
+  // 2. Puntero a >38px → dash hacia el puntero.
+  // 3. Si no → puntuar vectores candidatos recompensando avance, castigando
+  //    proximidad a obstáculos (con predicción futura) y evitando bordes.
   function chooseDashVector() {
     const dx = Number(input.right) - Number(input.left);
     const dy = Number(input.down) - Number(input.up);
@@ -765,6 +844,9 @@
     return best;
   }
 
+  // ── Pulso (explosión de energía) ──────────────────────────
+  // Destruye obstáculos dentro de 192px (incluye imanes enlazados) y empuja
+  // los grandes dentro de 302px. Costo: 1 energía. Enfriamiento: 0.42s.
   function triggerPulse() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.pulseCooldown > 0 || player.energy <= 0) {
@@ -822,6 +904,8 @@
     updateHud();
   }
 
+  // Disparo de proyectil: dirección del puntero (o de las flechas si no hay
+  // puntero activo). Costo: 1 bala de munición, cooldown de 0.25s.
   function triggerShoot() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.shotCooldown > 0) {
@@ -870,6 +954,9 @@
     updateHud();
   }
 
+  // ── Rayo ─────────────────────────────────────────────────
+  // Golpea todos los obstáculos en pantalla: los pequeños (r<40, shard,
+  // cannibal) mueren y los grandes quedan aturdidos (2s). Costo: 1 carga.
   function triggerLightning() {
     if (state.mode !== "playing" || state.paused) return;
     if (player.lightningCharges <= 0) {
@@ -923,6 +1010,8 @@
     updateHud();
   }
 
+  // Busca el obstáculo en peligro más próximo al frente del jugador; si queda
+  // a <64px, se reporta como candidato a "esquive inteligente".
   function findDangerObstacle(range) {
     let best = null;
     let bestDist = Infinity;
@@ -938,6 +1027,7 @@
     return bestDist < 64 ? best : null;
   }
 
+  // Radio de colisión efectivo por tipo (los anillos son más generosos al jugador).
   function collisionRadius(o) {
     if (o.type === "ring") return o.r + 9;
     if (o.type === "shard") return o.r * 0.9;
@@ -945,6 +1035,9 @@
     return o.r;
   }
 
+  // ── Detección de colisiones ──────────────────────────────
+  // Los anillos colisionan por su pared y por el centro; la invisibilidad da
+  // inmunidad total a todos los tipos de obstáculo.
   function collidesWithPlayer(o) {
     if (player.invisible && player.invisibleTimer > 0) return false;
     const d = dist(player, o);
@@ -959,6 +1052,7 @@
     return d < player.r + collisionRadius(o);
   }
 
+  // Mapa tipo→color de la paleta, usado para partículas/flotantes de destrucción.
   function obstacleColor(o) {
     if (o.type === "cube") return "#9b7dff";
     if (o.type === "stone") return "#ffd166";
@@ -968,6 +1062,9 @@
   }
 
   // Nueva función para el efecto remolino (absorbe obstáculos)
+  // ── Remolino de vacío ────────────────────────────────────
+  // Espiral de vacío: le da 2.5s al jugador para destruir los obstáculos que
+  // atrapó, luego los "traga" uno a uno con partículas de tolva.
   function updateWhirlpool(dt) {
     if (state.whirlpoolTimer <= 0) return;
     state.whirlpoolTimer -= dt;
@@ -1010,6 +1107,8 @@
     addRipple(player.x, player.y, "#4ee7d5", 80, 3);
   }
 
+  // Actualiza el FX de los rayos activos y los aturdimientos (stunTimer), con
+  // chispas aleatorias sobre los obstáculos electrificados mientras dura el stun.
   function updateLightningFX(dt) {
     for (const fx of state.lightningFX) {
       fx.timer -= dt;
@@ -1031,6 +1130,8 @@
     }
   }
 
+  // Mini-cohete aliado: persigue al jugador (movimiento con distancia acotada)
+  // y dispara al obstáculo más cercano dentro de 300px cada 0.6s.
   function updateAlly(dt) {
     if (!state.ally) return;
     state.ally.timer -= dt;
@@ -1078,6 +1179,10 @@
     }
   }
 
+  // ── Tick principal del juego ─────────────────────────────
+  // Avanza tiempo/distancia/puntuación, drena los temporizadores del jugador
+  // (cooldowns, invulnerabilidad, invisibilidad, congelación) y despacha cada
+  // subsistema de actualización en orden.
   function update(dt) {
     state.time += dt;
     state.distance += dt * (78 + state.phaseIndex * 4);
@@ -1120,6 +1225,9 @@
     updateHud();
   }
 
+  // ── Ciclo de fases ───────────────────────────────────────
+  // Al cumplirse la duración de la fase actual avanza el índice (módulo 4),
+  // muestra su toast y lanza una onda expansiva del color de la nueva fase.
   function updatePhase(dt) {
     state.phaseTime += dt;
     const phase = currentPhase();
@@ -1132,6 +1240,9 @@
     }
   }
 
+  // ── Movimiento del jugador (seguimiento con lerp) ────────
+  // Puntero: seguimiento proporcional (factor 6.2); flechas: diagonal
+  // normalizada a velocidad constante. Sin humo de escape en esta versión.
   function updatePlayer(dt) {
     const speed = player.dashTimer > 0 ? 580 : 330;
     let tx = 0;
@@ -1161,6 +1272,8 @@
     player.tilt += ((player.vy / 520) - player.tilt) * Math.min(1, dt * 8);
   }
 
+  // Temporiza la aparición de obstáculos y pickups. La dificultad reduce el
+  // intervalo de spawn a medida que crece la distancia recorrida (mínimo 0.52).
   function updateSpawning(dt) {
     const phase = currentPhase();
     state.spawnTimer -= dt;
@@ -1176,6 +1289,10 @@
     }
   }
 
+  // ── Actualización de obstáculos ───────────────────────────
+  // Cannibal: persigue con IA, aceleración limitada, vida útil de 4.5s.
+  // No-cannibal: oscilación vertical sinusoidal + deriva. Aturdidos no se mueven,
+  // congelados se ralentizan 95%. Detecta near-misses (<42px) tras el jugador.
   function updateObstacles(dt) {
     for (const o of state.obstacles) {
       if (o.type === "cannibal") {
@@ -1250,6 +1367,9 @@
     state.obstacles = state.obstacles.filter((o) => !o.dead && (o.type === "cannibal" ? (o.x > -200 && o.x < width + 200 && o.y > -200 && o.y < height + 200) : o.x > -160));
   }
 
+  // Colisión jugador-obstáculo: destruye el obstáculo, resta 1 vida, reinicia el
+  // combo, otorga invulnerabilidad (1.15s) y aplica efectos de impacto. El game
+  // over se dispara con 260ms de retraso para dejar ver el impacto.
   function handleHit(o) {
     o.dead = true;
     state.health -= 1;
@@ -1268,6 +1388,10 @@
     }
   }
 
+  // ── Actualización de pickups ──────────────────────────────
+  // Aplica el efecto del pickup recogido: vida (con tope de 6), munición
+  // (+3 con tope), invisibilidad (4s), aliado verde (6s), remolino, hielo,
+  // rayo (+1 carga con tope de 4) o cristal de pulso.
   function updatePickups(dt) {
     for (const p of state.pickups) {
       p.phase += dt * 2.2;
@@ -1360,6 +1484,8 @@
     state.pickups = state.pickups.filter((p) => !p.dead && p.x > -80);
   }
 
+  // Mueve los proyectiles; al chocar o salir de pantalla se eliminan con splice
+  // (recorrido con índice y decremento al borrar para no saltar elementos).
   function updateProjectiles(dt) {
     for (let i = 0; i < state.projectiles.length; i++) {
       const p = state.projectiles[i];
@@ -1386,6 +1512,7 @@
     }
   }
 
+  // Avanza partículas, ondas y textos flotantes, y limpia los agotados con filter.
   function updateEffects(dt) {
     for (const p of state.particles) {
       p.x += p.vx * dt;
@@ -1405,6 +1532,9 @@
     state.floating = state.floating.filter((f) => f.life > 0);
   }
 
+  // Orden de dibujo: fondo → modo demo → conexiones magnéticas → pickups →
+  // proyectiles → sombras y cuerpos de obstáculos → rayos → efectos → aliado →
+  // jugador → textos. El flash y la viñeta se aplican sobre todo al final.
   function render() {
     ctx.save();
     if (state.shake > 0) {
@@ -1439,6 +1569,8 @@
     ctx.restore();
   }
 
+  // Fondo procedural: degradado de cielo, nebulosas radiales, estrellas con
+  // parallax (desplazadas por la distancia recorrida) y halo de luz junto al jugador.
   function drawBackground() {
     const t = state.time;
     const sky = ctx.createLinearGradient(0, 0, width, height);
@@ -1482,6 +1614,8 @@
     ctx.fillRect(0, 0, width, height);
   }
 
+  // Modo demo (welcome/gameover): muestra obstáculos animados de muestra para
+  // ambientar la pantalla sin partida activa.
   function drawAttractMode() {
     const t = performance.now() / 1000;
     const centerX = width * 0.58;
@@ -1496,6 +1630,8 @@
     for (const o of samples) drawObstacle(o, true);
   }
 
+  // Agrupa obstáculos por grupo magnético y dibuja sus uniones como curvas
+  // discontinuas animadas (línea punteada, más visible cerca del jugador).
   function drawMagnetConnections() {
     const groups = new Map();
     for (const o of state.obstacles) {
@@ -1528,6 +1664,8 @@
     }
   }
 
+  // Sombra dinámica del obstáculo desde una fuente de luz virtual arriba-izquierda
+  // del jugador; distorsión de forma según el tipo de obstáculo.
   function drawObstacleShadow(o, strength = 1) {
     if (o.type === "cannibal") return;
     const lightX = player.x - 42;
@@ -1564,6 +1702,10 @@
     ctx.restore();
   }
 
+  // ── Renderizado de obstáculos ─────────────────────────────
+  // reveal: obstáculos a <190px (o empujados por pulso) muestran su forma detallada.
+  // Capa de hielo (composite lighter) cuando state.frozenTimer > 0, y efecto de
+  // choque verdoso en los aturdidos (shockGlow).
   function drawObstacle(o, forceReveal = false) {
     const reveal = forceReveal || (o.type !== "cannibal" && (dist(player, o) < 190 || o.pulseGlow > 0.01));
     ctx.save();
@@ -1612,6 +1754,8 @@
     ctx.restore();
   }
 
+  // Pacman caníbal: cuerpo con gradiente, ojos, cachetes y boca que se abre/cierra
+  // según o.mouth (animación de masticado).
   function drawCannibal(o, reveal) {
     const r = o.r;
     const angle = o.angle;
@@ -1684,6 +1828,8 @@
     ctx.restore();
   }
 
+  // Cubo metamórfico: número de lados (4-8) y radio que mutan con el tiempo (morph),
+  // gradiente "viaje espacial" y rejilla + puntos de luz cuando se revela.
   function drawMetamorphicCube(o, reveal, frozen) {
     const morph = (Math.sin(o.phase * 2.1 + o.seed) + 1) / 2;
     const sides = 4 + Math.floor(morph * 4);
@@ -1742,6 +1888,8 @@
     }
   }
 
+  // Piedra de balance: polígono irregular de 12 lados con rotación oscilante,
+  // brillo dorado-marrón y vetas curvas al revelarse.
   function drawBalanceStone(o, reveal, frozen) {
     const r = o.r;
     ctx.save();
@@ -1790,6 +1938,8 @@
     ctx.restore();
   }
 
+  // Anillo infinito: arco pulsante con nodos rosados y espiral decorativa al
+  // revelar. Colisiona tanto por su pared como por el centro (collidesWithPlayer).
   function drawInfiniteRing(o, reveal, frozen) {
     const r = o.r + Math.sin(o.phase * 2.4) * 5;
     const thickness = 10 + Math.sin(o.phase * 1.8) * 2;
@@ -1834,6 +1984,7 @@
     }
   }
 
+  // Fragmento afilado: polígono en ángulo con gradiente blanco-rosa-dorado.
   function drawShard(o, reveal, frozen) {
     const r = o.r;
     const grad = ctx.createLinearGradient(-r, -r, r, r);
@@ -1861,6 +2012,9 @@
     }
   }
 
+  // ── Renderizado de pickups ───────────────────────────────
+  // Cápsula giratoria con aura de color por tipo y emblema; rota con seno del
+  // tiempo acumulado. Los nombres se dibujan con espaciado fino.
   function drawPickup(p) {
     ctx.save();
     ctx.translate(p.x, p.y);
@@ -2032,6 +2186,7 @@
     ctx.restore();
   }
 
+  // mini-cohete aliado: cuerpo con gradiente, aletas y tronera de fuego.
   function drawAlly() {
     if (!state.ally) return;
     ctx.save();
@@ -2061,6 +2216,7 @@
     ctx.restore();
   }
 
+  // Balas blancas con estela; con 'lighter' para que el brillo se sume al fondo.
   function drawProjectiles() {
     for (const p of state.projectiles) {
       ctx.save();
@@ -2075,6 +2231,8 @@
     }
   }
 
+  // Rayos: polígono zigzag animado entre puntos (refresca con jitter por cuadro)
+  // hacia cada objetivo marcado con flag 'stun'. Termina cuando se agota el timer.
   function drawLightningBolts() {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
@@ -2126,6 +2284,7 @@
     ctx.restore();
   }
 
+  // Ondas expansivas: radio creciente y alpha que decae linealmente.
   function drawRipples() {
     for (const r of state.ripples) {
       const p = 1 - r.life / r.max;
@@ -2141,6 +2300,7 @@
     }
   }
 
+  // Chispas con estela: se dibujan como segmentos en la dirección de su velocidad.
   function drawParticles() {
     for (const p of state.particles) {
       ctx.save();
@@ -2154,6 +2314,7 @@
     }
   }
 
+  // Textos flotantes que se elevan y desvanecen (alpha 0→1→0).
   function drawFloating() {
     ctx.save();
     ctx.textAlign = "center";
@@ -2168,6 +2329,9 @@
     ctx.restore();
   }
 
+  // Nave del jugador: accesorio principal, par de alas y doble cañón; el morro
+  // apunta hacia la dirección del puntero (o de desplazamiento). El pulso se
+  // dibuja como halo de energía cuando player.energy > 0.
   function drawPlayer() {
     if (player.invisible && player.invisibleTimer > 0) {
       ctx.globalAlpha = 0.4;
@@ -2257,6 +2421,7 @@
     }
   }
 
+  // Viñeta oscura alrededor del jugador (efecto "prisma" del visor).
   function drawVignette() {
     const v = ctx.createRadialGradient(width / 2, height / 2, Math.min(width, height) * 0.24, width / 2, height / 2, Math.max(width, height) * 0.72);
     v.addColorStop(0, "rgba(0,0,0,0)");
@@ -2265,6 +2430,10 @@
     ctx.fillRect(0, 0, width, height);
   }
 
+  // ── Bucle de animación (rAF) ─────────────────────────────
+  // Delta real de tiempo clampado a 33ms para evitar saltos al cambiar de pestaña.
+  // Muestra demo + partículas en welcome/gameover; congelación (slow motion)
+  // cuando ningún obstáculo nuevo asusta para que el juego respire.
   function frame(timestamp) {
     const now = timestamp / 1000;
     const dt = Math.min(0.033, now - (lastFrame || now));
@@ -2284,6 +2453,7 @@
     requestAnimationFrame(frame);
   }
 
+  // Actualiza los flags de movimiento según el código de tecla (flechas o WASD).
   function setKey(code, down) {
     if (code === "ArrowUp" || code === "KeyW") input.up = down;
     if (code === "ArrowDown" || code === "KeyS") input.down = down;
@@ -2291,6 +2461,9 @@
     if (code === "ArrowRight" || code === "KeyD") input.right = down;
   }
 
+  // ── Entrada por teclado ─────────────────────────────────
+  // keydown: previene scroll de flechas/espacio; Enter inicia, Esc/P pausa,
+  // M silencia; espacio/shift = dash, E/X = pulso, Q = disparo, G = rayo.
   window.addEventListener("keydown", (event) => {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(event.code)) {
       event.preventDefault();
@@ -2324,9 +2497,12 @@
   });
 
   window.addEventListener("keyup", (event) => {
+    // Libera la tecla correspondiente cuando se deja de presionar.
     setKey(event.code, false);
   });
 
+  // ── Entrada táctil/ratón sobre el canvas ────────────────
+  // pointerdown: marca el puntero y detecta doble-tap (<280ms) como dash.
   canvas.addEventListener(
     "pointerdown",
     (event) => {
@@ -2345,6 +2521,7 @@
   canvas.addEventListener(
     "pointermove",
     (event) => {
+      // Actualización continua de la posición del puntero en coordenadas de cliente.
       event.preventDefault();
       input.pointer = true;
       input.pointerX = event.clientX;
@@ -2353,6 +2530,10 @@
     { passive: false },
   );
 
+// ── Registro de botones de pantalla ────────────────────
+  // Botones con su acción correspondiente (los listeners de ellos usan la
+  // última definición de su función, por eso startGame en modo playing activa
+  // el retry silencioso).
   startButton.addEventListener("click", startGame);
   restartButton.addEventListener("click", startGame);
   homeButton.addEventListener("click", returnHome);
@@ -2368,11 +2549,16 @@
     triggerPulse();
   });
 
+  // ── Resize del navegador ───────────────────────────────
+  // Reconstruye las estrellas y reajusta el canvas para la nueva área visible.
   window.addEventListener("resize", () => {
     buildStars();
     resize();
   });
 
+  // ── Inyección de indicadores de power-ups en el HUD ─────
+  // El HUD de este archivo templado no trae los paneles de power-ups; aquí se
+  // crean por DOM con createElement y se añaden al panel superior si faltan.
   if (!document.getElementById("invisibleIndicator")) {
     const hudDiv = document.querySelector(".hud");
     if (hudDiv) {
@@ -2397,7 +2583,7 @@
       hudDiv.appendChild(allyPanel);
     }
   }
-  // Nuevos indicadores
+  // Nuevos indicadores (remolino, hielo y rayos disponibles de la 1.1).
   if (!document.getElementById("whirlpoolIndicator")) {
     const hudDiv = document.querySelector(".hud");
     if (hudDiv) {
@@ -2436,5 +2622,6 @@
   }
 
   resize();
+  // Arranca el bucle principal del juego (primer frame).
   requestAnimationFrame(frame);
 })();
