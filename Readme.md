@@ -186,8 +186,4 @@ Se requiere un archivo `.env` con las credenciales de Firebase para el registro 
 
 ## 📜 Licencia
 
-Este repositorio se publica con fines de exhibición y portafolio.
-
-El código fuente y los recursos del proyecto son propiedad de su autor. No está permitida su redistribución, modificación o uso comercial sin autorización expresa.
-
 © Arturo Juárez Monroy. Todos los derechos reservados.
